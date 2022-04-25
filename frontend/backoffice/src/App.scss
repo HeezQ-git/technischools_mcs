@@ -6,6 +6,7 @@
 body {
   font-family: 'Roboto', sans-serif;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -52,6 +53,7 @@ html {
       --border-color-02: rgba(240, 240, 240, 0.8);
       --text-primary: #f0f0f0;
       --switcher-color: #f0f0f0;
+      --titles-color: #f0f0f0;
     }
     &:not(.dark) {
       --background-back-color: #f1f1f1;
@@ -62,6 +64,7 @@ html {
       --border-color-02: rgba(32, 32, 32, 0.8);
       --text-primary: #181818;
       --switcher-color: #3813c2;
+      --titles-color: #3a3a3a;
     }
   }
 }

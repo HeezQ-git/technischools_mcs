@@ -65,14 +65,14 @@ $thumb: var(--background-back-color);
         &::-webkit-scrollbar {
           background-color: $scrollbar;
           width: 5px;
-          transition: 0.3s;
+          transition: 0.3s ease;
         }
         /* scrollbar itself */
         &::-webkit-scrollbar-thumb {
           background-color: $thumb;
           border-radius: 16px;
           width: 3px;
-          transition: 0.3s;
+          transition: 0.3s ease;
         }
 
         /* set button(top and bottom of the scrollbar) */
@@ -135,7 +135,7 @@ $thumb: var(--background-back-color);
             transition: 0.2s;
 
             &_title {
-              color: #3a3a3a;
+              color: var(--titles-color);
               text-align: center;
               font-weight: 500;
               cursor: pointer;
@@ -183,14 +183,14 @@ $thumb: var(--background-back-color);
             &::-webkit-scrollbar {
               background-color: transparent;
               width: 5px;
-              transition: 0.3s;
+              transition: 0.3s ease;
             }
             /* scrollbar itself */
             &::-webkit-scrollbar-thumb {
               background-color: $thumb;
               border-radius: 16px;
               width: 3px;
-              transition: 0.3s;
+              transition: 0.3s ease;
             }
 
             /* set button(top and bottom of the scrollbar) */
@@ -239,7 +239,7 @@ $thumb: var(--background-back-color);
             transition: 0.2s;
 
             &_title {
-              color: #3a3a3a;
+              color: var(--titles-color);
               text-align: center;
               font-weight: 500;
               font-size: 18px;
@@ -278,14 +278,14 @@ $thumb: var(--background-back-color);
             &::-webkit-scrollbar {
               background-color: transparent;
               width: 5px;
-              transition: 0.3s;
+              transition: 0.3s ease;
             }
             /* scrollbar itself */
             &::-webkit-scrollbar-thumb {
               background-color: $thumb;
               border-radius: 16px;
               width: 3px;
-              transition: 0.3s;
+              transition: 0.3s ease;
             }
 
             /* set button(top and bottom of the scrollbar) */
@@ -414,4 +414,7 @@ $thumb: var(--background-back-color);
       }
     }
   }
+}
+.text-primary {
+  color: var(--text-primary);
 }

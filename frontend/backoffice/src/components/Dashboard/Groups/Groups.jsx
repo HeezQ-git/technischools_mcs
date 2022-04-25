@@ -7,7 +7,23 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Groups.scss';
 import { Tooltip, CircularProgress } from '@mui/material';
+import {
+  MdDelete,
+  MdEdit,
+  MdPersonAdd,
+  MdPhone,
+  MdRefresh,
+  MdSave,
+  MdCancel,
+  MdAdd,
+  MdRemove,
+  MdExpandMore,
+} from 'react-icons/md';
+import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
+import { CgSearch } from 'react-icons/cg';
+import { HiMail } from 'react-icons/hi';
 import Input from '../../Input/Input';
+import { BrowserView, MobileView } from 'react-device-detect';
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);
@@ -27,6 +43,7 @@ const Groups = () => {
   const userListRef = React.createRef();
 
   const scrollToRef = (ref) => {
+    if (editing[0]) return;
     if (!tablet) return;
     if (ref?.current) ref.current.scrollIntoView();
   };
@@ -160,11 +177,14 @@ const Groups = () => {
             <Input
               className='groups_container_groups_input-container_input'
               size='small'
-              placeholder='&#x1F50D; Szukaj grupy...'
+              starticon={<CgSearch />}
+              placeholder='Szukaj grupy...'
               onChange={(e) => searchGroup(e.target.value)}
             />
             <Tooltip title='Utwórz grupę'>
-              <a href='/dashboard/create-group'>&#10133;</a>
+              <a href='/dashboard/create-group'>
+                <MdAdd className='text-primary' size={25} />
+              </a>
             </Tooltip>
           </div>
           <div className='groups_container_groups_list'>
@@ -184,47 +204,86 @@ const Groups = () => {
                           : 'group-item_main hover:drop-shadow-md'
                       }
                     >
-                      <div
-                        className='group-item_main_names'
-                        onClick={() => {
-                          setChosenGroup(group);
-                          scrollToRef(userListRef);
-                        }}
-                      >
-                        <h2>
-                          {groups.indexOf(group) + 1}.{' '}
-                          {!editing[0] || editing[1] != group._id ? (
-                            group.name
-                          ) : (
-                            <Input
-                              className='rename-input'
-                              size='small'
-                              placeholder={group.name}
-                              onChange={(e) => setNewName(e.target.value)}
-                              onKeyDown={(e) =>
-                                `${e.code}`.toLowerCase() === 'enter' &&
-                                editGroup(group._id)
-                              }
-                            />
-                          )}
-                        </h2>
-                      </div>
+                      <BrowserView className='group-item_main_names select-none'>
+                        <div
+                          className='group-item_main_names'
+                          onClick={() => {
+                            if (editing[0]) return;
+                            setChosenGroup(group);
+                            scrollToRef(userListRef);
+                          }}
+                        >
+                          <h2>
+                            {groups.indexOf(group) + 1}.{' '}
+                            {!editing[0] || editing[1] != group._id ? (
+                              group.name
+                            ) : (
+                              <Input
+                                className='rename-input'
+                                size='small'
+                                placeholder={group.name}
+                                onChange={(e) => setNewName(e.target.value)}
+                                onKeyDown={(e) =>
+                                  `${e.code}`.toLowerCase() === 'enter' &&
+                                  editGroup(group._id)
+                                }
+                              />
+                            )}
+                          </h2>
+                        </div>
+                      </BrowserView>
+                      <MobileView className='group-item_main_names select-none'>
+                        <div
+                          className='group-item_main_names'
+                          onDoubleClick={() => {
+                            if (editing[0]) return;
+                            setChosenGroup(group);
+                            scrollToRef(userListRef);
+                          }}
+                        >
+                          <h2>
+                            {groups.indexOf(group) + 1}.{' '}
+                            {!editing[0] || editing[1] != group._id ? (
+                              group.name
+                            ) : (
+                              <Input
+                                className='rename-input'
+                                size='small'
+                                placeholder={group.name}
+                                onChange={(e) => setNewName(e.target.value)}
+                                onKeyDown={(e) =>
+                                  `${e.code}`.toLowerCase() === 'enter' &&
+                                  editGroup(group._id)
+                                }
+                              />
+                            )}
+                          </h2>
+                        </div>
+                      </MobileView>
                       {!editing[0] || editing[1] != group._id ? (
                         <div className='group-item_main_buttons'>
                           <Tooltip title='Edytuj'>
-                            <h2 onClick={() => editGroup(group._id)}>✏️</h2>
+                            <h2 onClick={() => editGroup(group._id)}>
+                              <MdEdit size={20} />
+                            </h2>
                           </Tooltip>
                           <Tooltip title='Usuń'>
-                            <h2 onClick={() => removeGroup(group._id)}>🗑️</h2>
+                            <h2 onClick={() => removeGroup(group._id)}>
+                              <MdDelete size={20} />
+                            </h2>
                           </Tooltip>
                         </div>
                       ) : (
                         <div className='group-item_main_buttons'>
                           <Tooltip title='Zapisz'>
-                            <h2 onClick={() => editGroup(group._id)}>💾</h2>
+                            <h2 onClick={() => editGroup(group._id)}>
+                              <MdSave size={20} />
+                            </h2>
                           </Tooltip>
                           <Tooltip title='Anuluj'>
-                            <h2 onClick={() => removeGroup(group._id)}>❌</h2>
+                            <h2 onClick={() => removeGroup(group._id)}>
+                              <MdCancel size={20} />
+                            </h2>
                           </Tooltip>
                         </div>
                       )}
@@ -240,7 +299,8 @@ const Groups = () => {
             <Input
               className='groups_container_main_input-container_input'
               size='small'
-              placeholder='&#x1F50D; Szukaj użytkowników...'
+              starticon={<CgSearch />}
+              placeholder='Szukaj użytkowników...'
               onChange={(e) => searchUser(e.target.value)}
             />
           </div>
@@ -261,7 +321,7 @@ const Groups = () => {
                       openedListSection ? 'flipped' : ''
                     }`}
                   >
-                    ⤵️
+                    <MdExpandMore size={26} />
                   </h2>
                 ) : null}
               </div>
@@ -313,7 +373,7 @@ const Groups = () => {
                                       }
                                       className='select-none'
                                     >
-                                      &#10134;
+                                      <MdRemove size={21} />
                                     </h2>
                                   </Tooltip>
                                 </div>
@@ -322,24 +382,41 @@ const Groups = () => {
                                   getUserById(id) && (
                                     <div>
                                       {getUserById(id).email && (
-                                        <p>
-                                          &#128231;{': '}
+                                        <p className='flex items-center gap-[3px]'>
+                                          <HiMail size={19} />
                                           <CopyToClipboard
                                             className='cursor-pointer'
                                             onCopy={() => copied()}
                                             text={getUserById(id).email}
                                           >
                                             <Tooltip title={copyTitle}>
-                                              <span>
-                                                {getUserById(id).email}
-                                              </span>
+                                              {document.body.clientWidth >=
+                                              970 ? (
+                                                <span>
+                                                  {getUserById(id).email}
+                                                </span>
+                                              ) : (
+                                                <span>
+                                                  {
+                                                    getUserById(id).email.split(
+                                                      '@'
+                                                    )[0]
+                                                  }
+                                                  <wbr />@
+                                                  {
+                                                    getUserById(id).email.split(
+                                                      '@'
+                                                    )[1]
+                                                  }
+                                                </span>
+                                              )}
                                             </Tooltip>
                                           </CopyToClipboard>
                                         </p>
                                       )}
                                       {getUserById(id).telephone && (
-                                        <p>
-                                          &#128241;{': '}
+                                        <p className='flex items-center gap-[3px]'>
+                                          <MdPhone size={19} />
                                           <CopyToClipboard
                                             className='cursor-pointer'
                                             onCopy={() => copied()}
@@ -387,7 +464,7 @@ const Groups = () => {
                       openedAddSection ? 'flipped' : ''
                     }`}
                   >
-                    ⤵️
+                    <MdExpandMore size={26} />
                   </h2>
                 ) : null}
               </div>
@@ -431,15 +508,15 @@ const Groups = () => {
                                   }
                                   className='select-none'
                                 >
-                                  &#10133;
+                                  <MdAdd size={21} />
                                 </h2>
                               </Tooltip>
                             </div>
                             {isUserOpened[0] && isUserOpened[1] == user._id && (
                               <div>
                                 {user.email && (
-                                  <p>
-                                    &#128231;{': '}
+                                  <p className='flex items-center gap-[3px]'>
+                                    <HiMail size={19} />
                                     <CopyToClipboard
                                       className='cursor-pointer'
                                       onCopy={() => copied()}
@@ -459,8 +536,8 @@ const Groups = () => {
                                   </p>
                                 )}
                                 {user.telephone && (
-                                  <p>
-                                    &#128241;{': '}
+                                  <p className='flex items-center gap-[3px]'>
+                                    <MdPhone size={19} />
                                     <CopyToClipboard
                                       className='cursor-pointer'
                                       onCopy={() => copied()}

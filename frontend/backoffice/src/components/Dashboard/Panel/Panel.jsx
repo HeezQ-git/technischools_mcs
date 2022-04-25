@@ -8,8 +8,16 @@ import Input from '../../Input/Input';
 import { Tooltip, IconButton, CircularProgress } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { formatPhoneNumber, delay } from '../../../utils/functions';
-import { MdPersonAdd } from 'react-icons/md';
-
+import {
+  MdDelete,
+  MdEdit,
+  MdPersonAdd,
+  MdPhone,
+  MdRefresh,
+} from 'react-icons/md';
+import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
+import { CgSearch } from 'react-icons/cg';
+import { HiMail } from 'react-icons/hi';
 const itemsPerPage = 5;
 
 const Panel = () => {
@@ -93,20 +101,21 @@ const Panel = () => {
               style={{ fontSize: '20px', cursor: 'pointer' }}
               onClick={() => getUsers()}
             >
-              🔃
+              <MdRefresh className={`${loading ? 'rotating' : ''}`} size={25} />
             </span>
           </Tooltip>
           <Input
             className='search_input'
             size='small'
-            placeholder='🔎 Szukaj...'
+            starticon={<CgSearch />}
+            placeholder='Szukaj...'
             onChange={(e) => searchUser(e.target.value)}
           />
         </div>
         <div className='panel_users'>
           {loading && (
             <div className='panel_users_loading'>
-              <CircularProgress /> <span>Ładuję listę użytkowników...</span>
+              <span>Ładuję listę użytkowników...</span>
             </div>
           )}
           {!!users.length ? (
@@ -120,11 +129,11 @@ const Panel = () => {
               />
               <ReactPaginate
                 breakLabel='...'
-                nextLabel='➡️'
+                nextLabel={<BsArrowRightShort size={30} />}
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={5}
                 pageCount={pageCount}
-                previousLabel='⬅️'
+                previousLabel={<BsArrowLeftShort size={30} />}
                 renderOnZeroPageCount={null}
               />
             </>
@@ -186,8 +195,9 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
               {(user.email || user.telephone) && (
                 <div className='onhover_info selection:bg-white-100 selection:text-indigo-900'>
                   {user.email && (
-                    <p>
-                      &#128231;{': '}
+                    <p className='flex items-center gap-[3px]'>
+                      <HiMail size={19} />
+
                       <CopyToClipboard
                         className='cursor-pointer'
                         onCopy={() => copied()}
@@ -203,8 +213,8 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
                     </p>
                   )}
                   {user.telephone && (
-                    <p>
-                      &#128241;{': '}
+                    <p className='flex items-center gap-[3px]'>
+                      <MdPhone size={19} />
                       <CopyToClipboard
                         className='cursor-pointer'
                         onCopy={() => copied()}
@@ -229,7 +239,9 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
                   size={'small'}
                   onClick={() => navigate(`/dashboard/edit-user/${user._id}`)}
                 >
-                  <span>&#9999;&#65039;</span>
+                  <span>
+                    <MdEdit size={21} />
+                  </span>
                 </IconButton>
               </Tooltip>
               <Tooltip title={deleteTitle}>
@@ -241,7 +253,9 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
                     setConfirmDelete(false);
                   }}
                 >
-                  <span>&#128465;&#65039;</span>
+                  <span>
+                    <MdDelete size={21} />
+                  </span>
                 </IconButton>
               </Tooltip>
             </div>

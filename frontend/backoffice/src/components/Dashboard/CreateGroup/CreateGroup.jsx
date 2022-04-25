@@ -7,7 +7,7 @@ import './CreateGroup.scss';
 import Input from '../../Input/Input';
 import { LoadingButton } from '@mui/lab';
 import { TextField, Autocomplete, Tooltip } from '@mui/material';
-import { MdErrorOutline, MdGroupAdd } from 'react-icons/md';
+import { MdErrorOutline, MdGroupAdd, MdAdd, MdDelete } from 'react-icons/md';
 import { Component } from 'react';
 
 const CreateGroup = () => {
@@ -108,7 +108,9 @@ const CreateGroup = () => {
               fullWidth
             />
             <Tooltip title='Dodaj'>
-              <button onClick={() => addUser()}>&#10133;</button>
+              <button onClick={() => addUser()}>
+                <MdAdd className='text-primary' size={25} />
+              </button>
             </Tooltip>
           </div>
           <div className='createGroup_box_users'>
@@ -116,7 +118,9 @@ const CreateGroup = () => {
               return (
                 <div key={index} className='createGroup_box_users_container'>
                   <h2>{user.label}</h2>
-                  <button onClick={() => removeUser(user)}>&#10060;</button>
+                  <button onClick={() => removeUser(user)}>
+                    <MdDelete size={18} />
+                  </button>
                 </div>
               );
             })}
