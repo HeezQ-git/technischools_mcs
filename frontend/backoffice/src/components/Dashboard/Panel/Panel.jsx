@@ -195,7 +195,7 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
               {(user.email || user.telephone) && (
                 <div className='onhover_info selection:bg-white-100 selection:text-indigo-900'>
                   {user.email && (
-                    <p className='flex items-center gap-[3px]'>
+                    <p className='flex items-center gap-[6px]'>
                       <HiMail size={19} />
 
                       <CopyToClipboard
@@ -213,7 +213,7 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
                     </p>
                   )}
                   {user.telephone && (
-                    <p className='flex items-center gap-[3px]'>
+                    <p className='flex items-center gap-[6px]'>
                       <MdPhone size={19} />
                       <CopyToClipboard
                         className='cursor-pointer'

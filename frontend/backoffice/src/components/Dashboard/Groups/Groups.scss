@@ -154,6 +154,7 @@ $thumb: var(--background-back-color);
 
             @include tablet {
               justify-content: space-between;
+              margin-top: 7px;
               &.chosen {
                 justify-content: center;
               }

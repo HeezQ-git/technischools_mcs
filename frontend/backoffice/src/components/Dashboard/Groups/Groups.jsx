@@ -268,7 +268,7 @@ const Groups = () => {
                             </h2>
                           </Tooltip>
                           <Tooltip title='Usuń'>
-                            <h2 onClick={() => removeGroup(group._id)}>
+                            <h2 onDoubleClick={() => removeGroup(group._id)}>
                               <MdDelete size={20} />
                             </h2>
                           </Tooltip>
@@ -382,7 +382,7 @@ const Groups = () => {
                                   getUserById(id) && (
                                     <div>
                                       {getUserById(id).email && (
-                                        <p className='flex items-center gap-[3px]'>
+                                        <p className='flex items-center gap-[6px]'>
                                           <HiMail size={19} />
                                           <CopyToClipboard
                                             className='cursor-pointer'
@@ -415,7 +415,7 @@ const Groups = () => {
                                         </p>
                                       )}
                                       {getUserById(id).telephone && (
-                                        <p className='flex items-center gap-[3px]'>
+                                        <p className='flex items-center gap-[6px]'>
                                           <MdPhone size={19} />
                                           <CopyToClipboard
                                             className='cursor-pointer'
@@ -515,7 +515,7 @@ const Groups = () => {
                             {isUserOpened[0] && isUserOpened[1] == user._id && (
                               <div>
                                 {user.email && (
-                                  <p className='flex items-center gap-[3px]'>
+                                  <p className='flex items-center gap-[6px]'>
                                     <HiMail size={19} />
                                     <CopyToClipboard
                                       className='cursor-pointer'
@@ -536,7 +536,7 @@ const Groups = () => {
                                   </p>
                                 )}
                                 {user.telephone && (
-                                  <p className='flex items-center gap-[3px]'>
+                                  <p className='flex items-center gap-[6px]'>
                                     <MdPhone size={19} />
                                     <CopyToClipboard
                                       className='cursor-pointer'
