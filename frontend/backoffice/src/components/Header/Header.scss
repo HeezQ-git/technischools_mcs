@@ -11,8 +11,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-backdrop);
+    border: var(--glass-border);
     border-radius: 20px;
-    background: var(--background-primary);
     .header_content {
       width: 95%;
       height: 100%;

@@ -1,25 +1,20 @@
-import { Box, Container, Paper, Typography } from '@mui/material';
 import { GroupsService } from '../../../services/groups.service';
 import { UsersService } from '../../../services/users.service';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { formatPhoneNumber, delay } from '../../../utils/functions';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './Groups.scss';
 import { Tooltip, CircularProgress } from '@mui/material';
 import {
   MdDelete,
   MdEdit,
-  MdPersonAdd,
   MdPhone,
-  MdRefresh,
   MdSave,
   MdCancel,
   MdAdd,
   MdRemove,
   MdExpandMore,
 } from 'react-icons/md';
-import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { HiMail } from 'react-icons/hi';
 import Input from '../../Input/Input';
@@ -171,7 +166,7 @@ const Groups = () => {
 
   return (
     <div className='groups'>
-      <div className='groups_container drop-shadow-xl'>
+      <div className='groups_container'>
         <div className='groups_container_groups'>
           <div className='groups_container_groups_input-container'>
             <Input
@@ -183,7 +178,7 @@ const Groups = () => {
             />
             <Tooltip title='Utwórz grupę'>
               <a href='/dashboard/create-group'>
-                <MdAdd className='text-primary' size={25} />
+                <MdAdd className='text-primary icon' size={25} />
               </a>
             </Tooltip>
           </div>
@@ -264,12 +259,12 @@ const Groups = () => {
                         <div className='group-item_main_buttons'>
                           <Tooltip title='Edytuj'>
                             <h2 onClick={() => editGroup(group._id)}>
-                              <MdEdit size={20} />
+                              <MdEdit size={20} className='icon' />
                             </h2>
                           </Tooltip>
                           <Tooltip title='Usuń'>
                             <h2 onDoubleClick={() => removeGroup(group._id)}>
-                              <MdDelete size={20} />
+                              <MdDelete size={20} className='icon' />
                             </h2>
                           </Tooltip>
                         </div>
@@ -277,12 +272,12 @@ const Groups = () => {
                         <div className='group-item_main_buttons'>
                           <Tooltip title='Zapisz'>
                             <h2 onClick={() => editGroup(group._id)}>
-                              <MdSave size={20} />
+                              <MdSave size={20} className='icon' />
                             </h2>
                           </Tooltip>
                           <Tooltip title='Anuluj'>
                             <h2 onClick={() => removeGroup(group._id)}>
-                              <MdCancel size={20} />
+                              <MdCancel size={20} className='icon' />
                             </h2>
                           </Tooltip>
                         </div>
@@ -321,7 +316,7 @@ const Groups = () => {
                       openedListSection ? 'flipped' : ''
                     }`}
                   >
-                    <MdExpandMore size={26} />
+                    <MdExpandMore size={26} className='icon' />
                   </h2>
                 ) : null}
               </div>
@@ -373,7 +368,7 @@ const Groups = () => {
                                       }
                                       className='select-none'
                                     >
-                                      <MdRemove size={21} />
+                                      <MdRemove size={21} className='icon' />
                                     </h2>
                                   </Tooltip>
                                 </div>
@@ -383,7 +378,7 @@ const Groups = () => {
                                     <div>
                                       {getUserById(id).email && (
                                         <p className='flex items-center gap-[6px]'>
-                                          <HiMail size={19} />
+                                          <HiMail size={19} className='icon' />
                                           <CopyToClipboard
                                             className='cursor-pointer'
                                             onCopy={() => copied()}
@@ -416,7 +411,7 @@ const Groups = () => {
                                       )}
                                       {getUserById(id).telephone && (
                                         <p className='flex items-center gap-[6px]'>
-                                          <MdPhone size={19} />
+                                          <MdPhone size={19} className='icon' />
                                           <CopyToClipboard
                                             className='cursor-pointer'
                                             onCopy={() => copied()}
@@ -464,7 +459,7 @@ const Groups = () => {
                       openedAddSection ? 'flipped' : ''
                     }`}
                   >
-                    <MdExpandMore size={26} />
+                    <MdExpandMore size={26} className='icon' />
                   </h2>
                 ) : null}
               </div>
@@ -516,7 +511,7 @@ const Groups = () => {
                               <div>
                                 {user.email && (
                                   <p className='flex items-center gap-[6px]'>
-                                    <HiMail size={19} />
+                                    <HiMail size={19} className='icon' />
                                     <CopyToClipboard
                                       className='cursor-pointer'
                                       onCopy={() => copied()}
@@ -537,7 +532,7 @@ const Groups = () => {
                                 )}
                                 {user.telephone && (
                                   <p className='flex items-center gap-[6px]'>
-                                    <MdPhone size={19} />
+                                    <MdPhone size={19} className='icon' />
                                     <CopyToClipboard
                                       className='cursor-pointer'
                                       onCopy={() => copied()}

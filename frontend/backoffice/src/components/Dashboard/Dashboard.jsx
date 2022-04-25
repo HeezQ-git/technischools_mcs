@@ -20,7 +20,7 @@ const Dashboard = () => {
         <div className='dashboard_container sm:justify-center'>
           <div className='dashboard_container_box-wrap'>
             <div
-              className='dashboard_container_box-wrap_box drop-shadow-md'
+              className='dashboard_container_box-wrap_box'
               onClick={() => navigate('/dashboard/panel')}
             >
               <h2>Panel</h2>
@@ -28,7 +28,7 @@ const Dashboard = () => {
           </div>
           <div className='dashboard_container_box-wrap'>
             <div
-              className='dashboard_container_box-wrap_box drop-shadow-md '
+              className='dashboard_container_box-wrap_box '
               onClick={() => navigate('/dashboard/groups')}
             >
               <h2>Grupy</h2>

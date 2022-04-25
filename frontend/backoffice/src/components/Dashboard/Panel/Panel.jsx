@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import './Panel.scss';
 import Input from '../../Input/Input';
-import { Tooltip, IconButton, CircularProgress } from '@mui/material';
+import { Tooltip, IconButton } from '@mui/material';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { formatPhoneNumber, delay } from '../../../utils/functions';
 import {
@@ -18,6 +18,7 @@ import {
 import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { HiMail } from 'react-icons/hi';
+
 const itemsPerPage = 5;
 
 const Panel = () => {
@@ -93,7 +94,7 @@ const Panel = () => {
 
   return (
     <div className='panel'>
-      <div className='panel_container drop-shadow-xl'>
+      <div className='panel_container'>
         <p className='font-semibold'>Lista użytkowników w bazie:</p>
         <div className='panel_container_searchbar'>
           <Tooltip title='Odśwież'>

@@ -13,7 +13,7 @@ const Header = ({ theme, changeTheme }) => {
 
   return (
     <div className='header_main'>
-      <div className='header_paper drop-shadow-xl'>
+      <div className='header_paper'>
         <Grid className='header_content'>
           <img
             src={theme ? logo_dark : logo_light}

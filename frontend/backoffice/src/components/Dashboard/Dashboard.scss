@@ -28,7 +28,10 @@
         font-size: 18px;
         font-weight: 500;
         transition: 0.2s;
-        background: var(--background-primary);
+        background-color: var(--glass-bg);
+        box-shadow: var(--glass-shadow);
+        backdrop-filter: var(--glass-backdrop);
+        border: var(--glass-border);
         color: var(--text-primary);
         &:hover {
           width: 150px;

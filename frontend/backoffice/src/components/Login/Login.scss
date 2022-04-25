@@ -8,7 +8,10 @@
     display: grid;
     align-items: center;
     .login_paper {
-      background-color: var(--background-primary);
+      background-color: var(--glass-bg);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-backdrop);
+      border: var(--glass-border);
       border-radius: 20px;
       padding: 10px;
       padding-block: 30px;

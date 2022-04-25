@@ -7,7 +7,10 @@
   align-items: center;
   justify-content: center;
   &_container {
-    background-color: var(--background-primary);
+    background-color: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-backdrop);
+    border: var(--glass-border);
     border-radius: 20px;
     padding: 25px 25px;
   }
