@@ -17,6 +17,8 @@ const Header = ({ theme, changeTheme }) => {
         <Grid className='header_content'>
           <img
             src={theme ? logo_dark : logo_light}
+            style={{ filter: !theme && 'brightness(0)' }}
+            draggable='false'
             className='logo'
             onClick={() => {
               window.location.pathname = '/dashboard';
@@ -34,7 +36,7 @@ const Header = ({ theme, changeTheme }) => {
                       viewBox='0 0 496 496'
                     >
                       <path
-                        fill={theme ? '#f0f0f0' : '#3813c2'}
+                        fill={theme ? '#fff' : '#000'}
                         d='M8,256C8,393,119,504,256,504S504,393,504,256,393,8,256,8,8,119,8,256ZM256,440V72a184,184,0,0,1,0,368Z'
                         transform='translate(-8 -8)'
                       />
@@ -46,7 +48,7 @@ const Header = ({ theme, changeTheme }) => {
             <Tooltip title='Wyloguj się'>
               <div
                 className={`logout cursor-pointer`}
-                style={{ color: !theme && '#3813c2' }}
+                style={{ color: !theme && '#000' }}
                 onClick={() => {
                   removeCookie('token', { path: '/' });
                   window.location.pathname = '/';

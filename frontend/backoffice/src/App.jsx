@@ -9,6 +9,7 @@ import { createTheme, useMediaQuery } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
 import { grey, blue } from '@mui/material/colors';
 import { useCookies } from 'react-cookie';
+import Spline from '@splinetool/react-spline';
 
 const App = () => {
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');

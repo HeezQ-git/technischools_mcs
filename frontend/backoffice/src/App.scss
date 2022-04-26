@@ -17,13 +17,17 @@ body {
   min-height: 100vh;
   padding-top: 10px;
   background-color: var(--background-back-color);
+  // background: rgb(131, 98, 255);
+  // background: radial-gradient(
+  //   circle,
+  //   rgba(131, 98, 255, 1) 0%,
+  //   rgba(211, 215, 255, 1) 72%,
+  //   rgba(255, 255, 255, 1) 100%
+  // );
 }
 
 .App {
   .limit-content {
-    background-image: url('./images/bgtest.jpg');
-    background-repeat: no-repeat;
-    background-size: cover;
     .center-content {
       height: 100vh;
       display: grid;
@@ -51,34 +55,41 @@ html {
       --background-back-color: #121212;
       --background-primary: #1e1e1e;
       --icon-color: rgb(219, 219, 219);
-      --added-users: #424242;
+      --added-users: #1e1e1e;
       --hover-item-color: rgba(43, 43, 43, 0.4);
       --border-color-01: rgba(240, 240, 240, 0.3);
       --border-color-02: rgba(240, 240, 240, 0.8);
       --text-primary: #f0f0f0;
       --switcher-color: #f0f0f0;
       --titles-color: #f0f0f0;
+      --icon-color: #fff;
       --glass-bg: rgba(0, 0, 0, 0.3);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
       --glass-backdrop: blur(10px);
       --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+      --bg-img: url('./images/dark_background.jpg');
     }
     &:not(.dark) {
       --background-back-color: #f1f1f1;
       --background-primary: #fff;
       --icon-color: rgb(95, 95, 95);
-      --added-users: #c0c0c0;
+      --added-users: #dddddd;
       --hover-item-color: rgba(247, 247, 247, 0.4);
       --border-color-01: rgba(32, 32, 32, 0.3);
       --border-color-02: rgba(32, 32, 32, 0.8);
       --text-primary: #181818;
       --switcher-color: #3813c2;
       --titles-color: #3a3a3a;
+      --icon-color: #000;
       --glass-bg: rgba(255, 255, 255, 0.3);
       --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
       --glass-backdrop: blur(10px);
       --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+      --bg-img: url('./images/_light_background.png');
     }
+    background-image: var(--bg-img);
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }
 

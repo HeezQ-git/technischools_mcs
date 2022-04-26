@@ -64,7 +64,9 @@
     .logo {
       height: 57px;
       cursor: pointer;
-      -webkit-user-drag: none;
+      // user-drag: none;
+      // pointer-events: none;
+      user-select: none;
     }
     .buttons {
       height: 100%;

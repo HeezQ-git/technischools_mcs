@@ -53,9 +53,7 @@ const EditUser = () => {
   };
 
   useEffect(async () => {
-    console.log(id);
     const res = await UsersService.getUser({ id });
-    console.log(res);
     if (res.data.success) {
       const user = res.data.user;
       setName(user.name);

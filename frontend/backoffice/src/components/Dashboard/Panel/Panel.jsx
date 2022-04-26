@@ -2,7 +2,6 @@ import { Typography, Button } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { UsersService } from '../../../services/users.service';
 import { useNavigate } from 'react-router-dom';
-import ReactPaginate from 'react-paginate';
 import './Panel.scss';
 import Input from '../../Input/Input';
 import { Tooltip, IconButton } from '@mui/material';
@@ -15,46 +14,43 @@ import {
   MdPhone,
   MdRefresh,
 } from 'react-icons/md';
-import { BsArrowLeftShort, BsArrowRightShort } from 'react-icons/bs';
 import { CgSearch } from 'react-icons/cg';
 import { HiMail } from 'react-icons/hi';
+import { Pagination } from '@mui/material';
+import { getPage, paginate } from '../../../utils/pagination';
 
-const itemsPerPage = 5;
+const usersPerPage = 5;
 
 const Panel = () => {
+  const [allUsers, setAllUsers] = useState([]);
   const [users, setUsers] = useState([]);
-  const [usersToChange, setUsersToChange] = useState([]);
   const [currentItems, setCurrentItems] = useState(null);
-  const [pageCount, setPageCount] = useState(0);
-  const [itemOffset, setItemOffset] = useState(0);
+  const [page, setPage] = useState(1);
   const [copyTitle, setCopyTitle] = useState('Skopiuj');
   const [loading, setLoading] = useState(null);
   const navigate = useNavigate();
 
-  const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % usersToChange.length;
-    setItemOffset(newOffset);
-  };
-
-  const paginate = (_users) => {
-    const endOffset = itemOffset + itemsPerPage;
-    setCurrentItems(_users.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(_users.length / itemsPerPage));
-  };
+  const changePage = (num) => setCurrentItems(getPage(users, num));
 
   const searchUser = (data) => {
     data = data.toLowerCase();
-    const foundUsers = users.filter(
-      (e) =>
-        e.name.toLowerCase().includes(data) ||
-        e.surname.toLowerCase().includes(data) ||
-        e.email?.toLowerCase()?.includes(data) ||
-        false ||
-        e.telephone?.toLowerCase()?.includes(data) ||
-        false
+
+    const filteredUsers = paginate(
+      allUsers.filter(
+        (e) =>
+          e.name.toLowerCase().includes(data) ||
+          e.surname.toLowerCase().includes(data) ||
+          e.email?.toLowerCase()?.includes(data) ||
+          false ||
+          e.telephone?.toLowerCase()?.includes(data) ||
+          false
+      ),
+      usersPerPage
     );
-    setUsersToChange(foundUsers);
-    paginate(foundUsers);
+
+    setUsers(filteredUsers);
+    setCurrentItems(getPage(filteredUsers, 1));
+    setPage(1);
   };
 
   const copied = async () => {
@@ -66,8 +62,9 @@ const Panel = () => {
   const getUsers = async () => {
     setLoading(true);
 
+    //* Clearing users to remove current ones,
+    //* so that the only visible thing is loading text.
     setUsers([]);
-    setUsersToChange([]);
     setCurrentItems([]);
 
     const res = await UsersService.getAllUsers();
@@ -75,11 +72,15 @@ const Panel = () => {
 
     if (res.data.success) {
       setUsers(users);
-      setUsersToChange(users);
       setCurrentItems(users);
     }
 
-    paginate(users);
+    setAllUsers(users);
+
+    const paginatedUsers = paginate(users, usersPerPage);
+
+    setUsers(paginatedUsers);
+    setCurrentItems(getPage(paginatedUsers, page));
 
     setLoading(false);
   };
@@ -87,10 +88,6 @@ const Panel = () => {
   useEffect(() => {
     getUsers();
   }, []);
-
-  useEffect(() => {
-    paginate(usersToChange);
-  }, [itemOffset, itemsPerPage]);
 
   return (
     <div className='panel'>
@@ -128,15 +125,17 @@ const Panel = () => {
                 getUsers={getUsers}
                 navigate={navigate}
               />
-              <ReactPaginate
-                breakLabel='...'
-                nextLabel={<BsArrowRightShort size={30} />}
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={5}
-                pageCount={pageCount}
-                previousLabel={<BsArrowLeftShort size={30} />}
-                renderOnZeroPageCount={null}
-              />
+              <div className='pagination'>
+                <Pagination
+                  className='flex items-center'
+                  count={users.length}
+                  page={page}
+                  onChange={(e, p) => {
+                    setPage(p);
+                    changePage(p);
+                  }}
+                />
+              </div>
             </>
           ) : (
             !loading && (
@@ -151,7 +150,7 @@ const Panel = () => {
         <div className='flex w-full items-center justify-between mt-[20px]'>
           {users && (
             <span className='opacity-30 select-none ml-[25px]'>
-              Znaleziono {users.length} użytkowników
+              Znaleziono {allUsers.length} użytkowników
             </span>
           )}
           <Button
