@@ -12,7 +12,7 @@
   }
   &_send {
     flex: 1;
-    min-height: 70vh;
+    height: 75vh;
     background-color: var(--glass-bg);
     box-shadow: var(--glass-shadow);
     backdrop-filter: var(--glass-backdrop);
@@ -51,7 +51,7 @@
   }
   &_history {
     flex: 1;
-    min-height: 70vh;
+    height: 75vh;
     background-color: var(--glass-bg);
     box-shadow: var(--glass-shadow);
     backdrop-filter: var(--glass-backdrop);
@@ -68,6 +68,12 @@
       gap: 15px;
       &_title {
       }
+    }
+    &_list {
+      max-height: 80%;
+      overflow-y: scroll;
+    }
+    &_message {
     }
   }
 }
