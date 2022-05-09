@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 const loginApi = require('./backend/backoffice/login');
 const usersApi = require('./backend/backoffice/users');
 const groupsApi = require('./backend/backoffice/groups');
+const mailerApi = require('./backend/backoffice/mailer');
+const messagesApi = require('./backend/backoffice/messages');
 const config = require('./backend/config/');
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -20,6 +22,8 @@ app.use(cookieParser());
 app.use(loginApi);
 app.use(usersApi);
 app.use(groupsApi);
+app.use(mailerApi);
+app.use(messagesApi);
 
 const PORT = 8080;
 app.listen(process.env.PORT || PORT, () => {

@@ -1,7 +1,7 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const messagesService = require("./service");
+const messagesService = require('./service');
 
-router.get("/api/send", messagesService.sendMessage);
+router.post('/api/get-all-messages', messagesService.getAllMessages);
 
 module.exports = router;

@@ -27,7 +27,7 @@ const AddUser = () => {
     if (!name) return setError('NAME');
     else if (!surname) return setError('SURNAME');
     else if (!type) return setError('TYPE');
-    else if (!type) return setError('ERROR');
+    else if (!email) return setError('EMAIL');
     if (number && number.length != 9) return setError('NUMBER');
 
     setError('');

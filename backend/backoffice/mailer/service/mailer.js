@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const Groups = require('../../../models/groups');
+const Users = require('../../../models/persons');
+const Messages = require('../../../models/messages');
+require('dotenv').config();
 
 let transporter = nodemailer.createTransport({
   service: 'hotmail',
@@ -8,11 +12,11 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async (userEmail, content, subject) => {
+const sendMail = async (userEmail, content, title) => {
   let info = await transporter.sendMail({
-    from: `"Technischools" <${process.env.MICROSOFT_USER}>`,
+    from: `"Technischools" <${process.env.MAILER_USER}>`,
     to: userEmail,
-    subject: subject,
+    subject: title,
     text: content,
     html: `<p>${content}</p>`,
   });
@@ -25,19 +29,37 @@ const sendEmail = async (req, res) => {
     success: false,
   };
 
-  const users = req.body.users;
-  if (users?.length > 0 && req.body.subject && req.body.content) {
-    for await (const user of users) {
-      try {
-        const info = await sendMail(
-          user.email,
-          req.body.subject,
-          req.body.content
-        );
-        if (info?.rejected?.length == 0) response.success = true;
-      } catch (error) {
-        console.log(error);
+  const groups = req.body.groups;
+  if (!!groups && req.body.title && req.body.content) {
+    for await (const group of groups) {
+      if (!group.id) return;
+
+      const _group = await Groups.findOne({ _id: group.id });
+      // console.log(req.body.groups);
+
+      for await (const user of _group.userid) {
+        const _user = await Users.findOne({ _id: user });
+
+        try {
+          const info = await sendMail(
+            _user.email,
+            req.body.content,
+            req.body.title
+          );
+
+          if (info?.rejected?.length > 0) response.error = true;
+        } catch (error) {
+          console.log(error);
+        }
       }
+
+      await Messages.create({
+        type: req.body.type,
+        title: req.body.title,
+        content: req.body.content,
+        receiver: _group.id,
+        sender: 'test123',
+      });
     }
   }
 

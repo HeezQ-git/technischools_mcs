@@ -19,6 +19,7 @@ import { CgSearch } from 'react-icons/cg';
 import { HiMail } from 'react-icons/hi';
 import Input from '../../Input/Input';
 import { BrowserView, MobileView } from 'react-device-detect';
+import { useNavigate } from 'react-router';
 
 const Groups = () => {
   const [groups, setGroups] = useState([]);
@@ -35,6 +36,7 @@ const Groups = () => {
   const [tablet, isTablet] = useState(document.body.clientWidth <= 768);
   const [openedAddSection, isOpenedAddSection] = useState(!tablet);
 
+  const navigate = useNavigate();
   const userListRef = React.createRef();
 
   const scrollToRef = (ref) => {
@@ -133,7 +135,16 @@ const Groups = () => {
       (e, index) =>
         e.name.toLowerCase().includes(data) ||
         (index + 1).toString() === data ||
-        e.userid.some((u) => getUserById(u).name.toLowerCase().includes(data))
+        e.userid.some(
+          (u) =>
+            getUserById(u).name.toLowerCase().includes(data) ||
+            `${getUserById(u).name.toLowerCase()} ${getUserById(
+              u
+            ).surname.toLowerCase()}`.includes(data) ||
+            `${getUserById(u).surname.toLowerCase()} ${getUserById(
+              u
+            ).name.toLowerCase()}`.includes(data)
+        )
     );
     setGroupsToDisplay(foundGroup);
   };
@@ -141,13 +152,13 @@ const Groups = () => {
   const searchUser = (data) => {
     data = data.toLowerCase();
 
-    const foundUser = [];
-    users.forEach(
-      (e, index) =>
-        (e.name.toLowerCase().includes(data) ||
-          e.surname.toLowerCase().includes(data) ||
-          e.email?.toLowerCase().includes(data)) &&
-        foundUser.push(e)
+    const foundUser = users.filter(
+      (e) =>
+        e.name.toLowerCase().includes(data) ||
+        e.surname.toLowerCase().includes(data) ||
+        e.email?.toLowerCase().includes(data) ||
+        `${e.name.toLowerCase()} ${e.surname.toLowerCase()}`.includes(data) ||
+        `${e.surname.toLowerCase()} ${e.name.toLowerCase()}`.includes(data)
     );
 
     setUsersToFilter(foundUser);
@@ -259,12 +270,12 @@ const Groups = () => {
                         <div className='group-item_main_buttons'>
                           <Tooltip title='Edytuj'>
                             <h2 onClick={() => editGroup(group._id)}>
-                              <MdEdit size={20} className='icon' />
+                              <MdEdit size={19} className='icon' />
                             </h2>
                           </Tooltip>
                           <Tooltip title='Usuń'>
                             <h2 onDoubleClick={() => removeGroup(group._id)}>
-                              <MdDelete size={20} className='icon' />
+                              <MdDelete size={19} className='icon' />
                             </h2>
                           </Tooltip>
                         </div>
@@ -343,39 +354,45 @@ const Groups = () => {
                               key={index}
                             >
                               <span className='user-item hover:drop-shadow-md'>
-                                <div>
-                                  <h4
-                                    onClick={() => {
-                                      if (!isUserOpened[0])
-                                        return setUserOpened([true, id]);
-                                      if (id != isUserOpened[1])
-                                        setUserOpened([isUserOpened[0], id]);
-                                      else
-                                        setUserOpened([!isUserOpened[0], id]);
-                                    }}
+                                <h4
+                                  onClick={() => {
+                                    if (!isUserOpened[0])
+                                      return setUserOpened([true, id]);
+                                    if (id != isUserOpened[1])
+                                      setUserOpened([isUserOpened[0], id]);
+                                    else setUserOpened([!isUserOpened[0], id]);
+                                  }}
+                                >
+                                  {getUserById(id) ? getUserById(id).name : '-'}{' '}
+                                  {getUserById(id)
+                                    ? getUserById(id).surname
+                                    : '-'}
+                                </h4>
+                                <Tooltip title='Edytuj'>
+                                  <h2
+                                    onClick={() =>
+                                      navigate(`/dashboard/edit-user/${id}`)
+                                    }
+                                    className='select-none ml-auto opacity-0'
                                   >
-                                    {getUserById(id)
-                                      ? getUserById(id).name
-                                      : '-'}{' '}
-                                    {getUserById(id)
-                                      ? getUserById(id).surname
-                                      : '-'}
-                                  </h4>
-                                  <Tooltip title='Usuń'>
-                                    <h2
-                                      onClick={() =>
-                                        removeFromGroup(chosenGroup._id, id)
-                                      }
-                                      className='select-none'
-                                    >
-                                      <MdRemove size={21} className='icon' />
-                                    </h2>
-                                  </Tooltip>
-                                </div>
+                                    <MdEdit size={19} className='icon' />
+                                  </h2>
+                                </Tooltip>
+                                <Tooltip title='Usuń'>
+                                  <h2
+                                    onClick={() =>
+                                      removeFromGroup(chosenGroup._id, id)
+                                    }
+                                    className='select-none ml-auto opacity-0'
+                                  >
+                                    <MdDelete size={19} className='icon' />
+                                  </h2>
+                                </Tooltip>
+
                                 {isUserOpened[0] &&
                                   isUserOpened[1] == id &&
                                   getUserById(id) && (
-                                    <div>
+                                    <div className='user-item_info mr-auto'>
                                       {getUserById(id).email && (
                                         <p className='flex items-center gap-[6px]'>
                                           <HiMail size={19} className='icon' />
@@ -483,7 +500,7 @@ const Groups = () => {
                           key={index}
                         >
                           <span className='user-item hover:drop-shadow-md'>
-                            <div>
+                            <div className='flex items-center justify-between w-full'>
                               <h4
                                 onClick={() => {
                                   if (!isUserOpened[0])

@@ -1,31 +1,31 @@
 const mongoose = require('mongoose');
 
-const studentsSchema = new mongoose.Schema(
+const messagesSchema = new mongoose.Schema(
   {
-    name: {
+    type: {
       type: String,
       required: true,
     },
-    surname: {
+    title: {
       type: String,
       required: true,
     },
-    telephone: {
+    content: {
       type: String,
       required: true,
     },
-    email: {
+    receiver: {
       type: String,
       required: true,
     },
-    parentId: {
+    sender: {
       type: String,
       required: true,
     },
   },
-  { collection: 'students' }
+  { collection: 'messages' }
 );
 
-const Students = mongoose.model('students', studentsSchema);
+const messages = mongoose.model('messages', messagesSchema);
 
-module.exports = Students;
+module.exports = messages;

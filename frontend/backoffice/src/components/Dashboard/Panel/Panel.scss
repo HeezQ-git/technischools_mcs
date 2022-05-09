@@ -145,6 +145,7 @@
 .rotating {
   animation: rotation 0.7s forwards infinite linear;
 }
+
 @keyframes rotation {
   from {
     transform: rotate(0deg);

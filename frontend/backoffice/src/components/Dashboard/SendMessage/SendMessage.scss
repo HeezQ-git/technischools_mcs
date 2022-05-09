@@ -1,0 +1,137 @@
+@import '../../../_mixins.scss';
+
+.messages {
+  width: 100%;
+  padding-bottom: 25px;
+  // margin-inline: auto;
+  color: var(--text-primary);
+  display: flex;
+  gap: 50px;
+  @include tablet {
+    flex-direction: column;
+  }
+  &_send {
+    flex: 1;
+    min-height: 70vh;
+    background-color: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-backdrop);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+
+    // @include tablet {
+    //   flex-direction: column;
+    //   height: 100%;
+    //   margin-bottom: 50px;
+    // }
+    &_title {
+      width: 100%;
+    }
+    &_textarea {
+      width: 100%;
+    }
+    &_submit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      &_radio {
+        display: flex;
+        flex-direction: row !important;
+        align-items: center;
+        justify-content: space-between;
+      }
+      &_button {
+        width: 120px;
+      }
+    }
+  }
+  &_history {
+    flex: 1;
+    min-height: 70vh;
+    background-color: var(--glass-bg);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-backdrop);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    &_search {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      &_title {
+      }
+    }
+  }
+}
+
+.message-item-container {
+  width: 100%;
+}
+.message-item {
+  width: 100%;
+  height: 55px;
+  cursor: pointer;
+  &_main {
+    height: 45px;
+    width: 100%;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    border-radius: 15px;
+    transition: 0.2s;
+    padding-inline: 10px;
+    &_title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      height: 95%;
+      margin-block: 5px;
+      h2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .rename-input {
+        width: 90%;
+        height: 50%;
+        &::placeholder {
+          user-select: none;
+        }
+      }
+    }
+    &_buttons {
+      display: flex;
+      opacity: 0;
+      align-items: center;
+      gap: 10px;
+      transition: 0.2s;
+      margin-right: 10px;
+      h2 {
+        user-select: none;
+      }
+    }
+    &:hover {
+      height: 50px;
+      background: var(--hover-item-color);
+      .group-item_main_buttons {
+        opacity: 1;
+      }
+    }
+    &.chosen-group {
+      height: 50px;
+      background: var(--hover-item-color);
+      .group-item_main_buttons {
+        opacity: 1;
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@ import { Component } from 'react';
 
 const CreateGroup = () => {
   const [name, setName] = useState('');
-  const [type, setType] = useState(null);
+  const [type, setType] = useState([]);
   const [error, setError] = useState('');
   const [types, setTypes] = useState([]);
   const [responseError, setResponseError] = useState('');
@@ -25,12 +25,15 @@ const CreateGroup = () => {
 
   const createGroup = async () => {
     if (!name) return setError('NAME');
+
     setError('');
     setLoading(true);
+
     let userIds = [];
-    addedUsers.map((user) => {
+    type.map((user) => {
       userIds.push(user.id);
     });
+
     const res = await GroupsService.createGroup({
       name,
       userIds,
@@ -41,16 +44,7 @@ const CreateGroup = () => {
 
     setLoading(false);
   };
-  const addUser = () => {
-    if (!type) return;
-    setAddedUsers([...addedUsers, type]);
-    setType(null);
-  };
-  const removeUser = (lbl) => {
-    let _addedUsers = addedUsers;
-    _addedUsers = addedUsers.filter((e) => e.id != lbl.id);
-    setAddedUsers(_addedUsers);
-  };
+
   useEffect(async () => {
     const res = await UsersService.getAllUsers();
 
@@ -74,7 +68,7 @@ const CreateGroup = () => {
             <Input
               placeholder='Nazwa grupy'
               label='Nazwa'
-              error={error.includes('GROUP')}
+              error={error.includes('NAME')}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -87,17 +81,13 @@ const CreateGroup = () => {
           <div className='createGroup_box_select'>
             <Autocomplete
               disablePortal
-              options={types.filter((e) => {
-                if (!addedUsers.includes(e)) return true;
-              })}
+              multiple
+              options={types}
               value={type}
               onChange={(event, newValue) => {
                 setType(newValue);
                 setError('');
               }}
-              onKeyDown={(e) =>
-                `${e.code}`.toLowerCase() === 'enter' && addUser()
-              }
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -107,23 +97,6 @@ const CreateGroup = () => {
               )}
               fullWidth
             />
-            <Tooltip title='Dodaj'>
-              <button onClick={() => addUser()}>
-                <MdAdd className='text-primary' size={25} />
-              </button>
-            </Tooltip>
-          </div>
-          <div className='createGroup_box_users'>
-            {addedUsers.map((user, index) => {
-              return (
-                <div key={index} className='createGroup_box_users_container'>
-                  <h2>{user.label}</h2>
-                  <button onClick={() => removeUser(user)}>
-                    <MdDelete size={18} />
-                  </button>
-                </div>
-              );
-            })}
           </div>
           <div className='createGroup_box_buttons'>
             <Button onClick={() => navigate('/dashboard/groups/')}>Wróć</Button>

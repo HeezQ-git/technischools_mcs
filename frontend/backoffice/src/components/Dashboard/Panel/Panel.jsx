@@ -10,6 +10,7 @@ import { formatPhoneNumber, delay } from '../../../utils/functions';
 import {
   MdDelete,
   MdEdit,
+  MdMail,
   MdPersonAdd,
   MdPhone,
   MdRefresh,
@@ -43,7 +44,9 @@ const Panel = () => {
           e.email?.toLowerCase()?.includes(data) ||
           false ||
           e.telephone?.toLowerCase()?.includes(data) ||
-          false
+          false ||
+          `${e.name.toLowerCase()} ${e.surname.toLowerCase()}`.includes(data) ||
+          `${e.surname.toLowerCase()} ${e.name.toLowerCase()}`.includes(data)
       ),
       usersPerPage
     );
@@ -128,6 +131,8 @@ const Panel = () => {
               <div className='pagination'>
                 <Pagination
                   className='flex items-center'
+                  size={document.body.clientWidth <= 480 ? 'small' : 'medium'}
+                  siblingCount={document.body.clientWidth <= 480 ? 0 : 1}
                   count={users.length}
                   page={page}
                   onChange={(e, p) => {
@@ -196,7 +201,7 @@ const Items = ({ currentItems, copyTitle, copied, getUsers, navigate }) => {
                 <div className='onhover_info selection:bg-white-100 selection:text-indigo-900'>
                   {user.email && (
                     <p className='flex items-center gap-[6px]'>
-                      <HiMail size={19} />
+                      <MdMail size={19} />
 
                       <CopyToClipboard
                         className='cursor-pointer'
