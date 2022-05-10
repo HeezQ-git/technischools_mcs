@@ -3,7 +3,7 @@ import './SendMessage.scss';
 import { GroupsService } from '../../../services/groups.service';
 import { UsersService } from '../../../services/users.service';
 import { MailerService } from '../../../services/mailer.service';
-import { MessagesService } from '../../../services/messages.service';
+import { handleCommand } from '../../../services/terminal.service';
 
 import Input from '../../Input/Input';
 import AllMessages from './AllMessages/AllMessages';
@@ -14,7 +14,6 @@ import { Radio } from '@mui/material';
 import { FormControlLabel } from '@mui/material';
 import { IoMdSend } from 'react-icons/io';
 import { LoadingButton } from '@mui/lab';
-import { CgSearch } from 'react-icons/cg';
 
 const SendMessage = () => {
   const [groups, setGroups] = useState([]);
@@ -164,9 +163,22 @@ const SendMessage = () => {
           >
             Wyślij
           </LoadingButton>
+
+          <LoadingButton
+            onClick={() =>
+              handleCommand(
+                '/add -n wiktor -s pawdasidv -t admin -e jffgdf@gmail.com -p 78238723; -n wiktor2 -s pawdasidv -t admin -e jff2gdf@gmail.com -p 78238723'
+              )
+            }
+          >
+            Test
+          </LoadingButton>
         </div>
       </div>
-      <AllMessages refresh={refreshMessages} />
+      <AllMessages
+        refresh={refreshMessages}
+        setRefreshMessages={setRefreshMessages}
+      />
     </div>
   );
 };

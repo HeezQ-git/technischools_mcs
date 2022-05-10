@@ -50,3 +50,18 @@
     }
   }
 }
+
+*::-webkit-scrollbar {
+  width: 5px;
+  height: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 100vw;
+  background: var(--scrollbar-background);
+  border-right: 1px solid transparent;
+}

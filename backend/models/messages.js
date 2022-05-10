@@ -15,12 +15,16 @@ const messagesSchema = new mongoose.Schema(
       required: true,
     },
     receiver: {
-      type: String,
+      type: [{ type: String }],
       required: true,
     },
     sender: {
       type: String,
       required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
     },
   },
   { collection: 'messages' }

@@ -1,9 +1,11 @@
 const nodemailer = require('nodemailer');
 const Groups = require('../../../models/groups');
+const jwt = require('jsonwebtoken');
 const Users = require('../../../models/persons');
 const Messages = require('../../../models/messages');
 require('dotenv').config();
 
+const pass = 'Technischools!';
 let transporter = nodemailer.createTransport({
   service: 'hotmail',
   auth: {
@@ -29,38 +31,43 @@ const sendEmail = async (req, res) => {
     success: false,
   };
 
-  const groups = req.body.groups;
+  let groups = req.body.groups;
   if (!!groups && req.body.title && req.body.content) {
-    for await (const group of groups) {
-      if (!group.id) return;
+    const allGroups = [];
 
-      const _group = await Groups.findOne({ _id: group.id });
-      // console.log(req.body.groups);
-
-      for await (const user of _group.userid) {
-        const _user = await Users.findOne({ _id: user });
-
-        try {
-          const info = await sendMail(
-            _user.email,
-            req.body.content,
-            req.body.title
-          );
-
-          if (info?.rejected?.length > 0) response.error = true;
-        } catch (error) {
-          console.log(error);
-        }
-      }
-
-      await Messages.create({
-        type: req.body.type,
-        title: req.body.title,
-        content: req.body.content,
-        receiver: _group.id,
-        sender: 'test123',
-      });
+    for await (const _group of groups) {
+      allGroups.push(await Groups.findOne({ _id: _group.id }));
     }
+
+    let users = [];
+    allGroups.map((_) => users.push(..._.userid));
+    users = [...new Set(users)];
+
+    for await (const user of users) {
+      const _user = await Users.findOne({ _id: user });
+
+      try {
+        const info = await sendMail(
+          _user.email,
+          req.body.content,
+          req.body.title
+        );
+
+        if (info?.rejected?.length > 0) response.error = true;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const token = jwt.verify(req.cookies['token'], pass);
+
+    await Messages.create({
+      type: req.body.type,
+      title: req.body.title,
+      content: req.body.content,
+      receiver: req.body.groups.map((_) => _.id),
+      sender: token.name,
+    });
   }
 
   return res.status(200).json(response);
