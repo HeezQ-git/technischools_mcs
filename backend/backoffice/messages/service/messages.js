@@ -9,10 +9,22 @@ const twilio = require("twilio");
 const client = new twilio(accountSid, authToken);
 
 const sendMessage = async (req, res) => {
-  const numbers = [];
-  let _group = await Groups.findOne({ _id: req.body.groups[0].id });
+  let numbers = [];
+  let allGroups = [];
+  let users = [];
 
-  for await (const userid of _group.userid) {
+  for (const group of req.body.groups) {
+    allGroups.push(group.id);
+  }
+
+  for (const group of allGroups) {
+    let _group = await Groups.findOne({ _id: group });
+    _group.userid.map((_) => users.push(_));
+  }
+
+  users = [...new Set(users)];
+
+  for await (const userid of users) {
     let user = await Users.findOne({ _id: userid });
     numbers.push(user.telephone);
   }
@@ -31,7 +43,7 @@ const sendMessage = async (req, res) => {
     type: req.body.type,
     title: req.body.title,
     content: req.body.content,
-    receiver: _group.id,
+    receiver: req.body.groups.map((_) => _.id),
     sender: "Admin",
   });
 
