@@ -20,3 +20,9 @@
     @content;
   }
 }
+
+@mixin desktop {
+  @media (min-width: #{$tablet}) {
+    @content;
+  }
+}

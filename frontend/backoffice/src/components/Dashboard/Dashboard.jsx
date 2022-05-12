@@ -11,6 +11,7 @@ import CreateGroup from './CreateGroup/CreateGroup';
 import CheckSession from '../CheckSession';
 import SendMessage from './SendMessage/SendMessage';
 import Terminal from './Terminal/Terminal';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,7 +21,12 @@ const Dashboard = () => {
     if ((e.ctrlKey && e.key === 's') || (e.ctrlKey && e.key === 'k'))
       e.preventDefault();
     if (e.ctrlKey && e.key === 'k') isTerminal(!terminal);
+    else if (e.key === 'Escape') isTerminal(false);
   };
+
+  useEffect(() => {
+    document.body.style.overflow = terminal ? 'hidden' : 'unset';
+  }, [terminal]);
 
   return (
     <div className='dashboard'>

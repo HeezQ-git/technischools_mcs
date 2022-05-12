@@ -65,3 +65,11 @@
   background: var(--scrollbar-background);
   border-right: 1px solid transparent;
 }
+
+.MuiPaper-root {
+  background-color: var(--background-back-color) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: var(--glass-backdrop) !important;
+  border: var(--glass-border) !important;
+  border-radius: 20px !important;
+}

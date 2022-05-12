@@ -163,16 +163,6 @@ const SendMessage = () => {
           >
             Wyślij
           </LoadingButton>
-
-          <LoadingButton
-            onClick={() =>
-              handleCommand(
-                '/add -n wiktor -s pawdasidv -t admin -e jffgdf@gmail.com -p 78238723; -n wiktor2 -s pawdasidv -t admin -e jff2gdf@gmail.com -p 78238723'
-              )
-            }
-          >
-            Test
-          </LoadingButton>
         </div>
       </div>
       <AllMessages

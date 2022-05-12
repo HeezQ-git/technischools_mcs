@@ -5,7 +5,7 @@ const getUser = async (req, res) => {
     success: false,
   };
 
-  let user = await persons.findOne({ _id: req.body.id, active: true });
+  const user = await persons.findOne({ _id: req.body.id, active: true });
   if (user) {
     response.user = user;
     response.success = true;
@@ -60,6 +60,7 @@ const editUser = async (req, res) => {
   };
 
   let user, userEmail;
+
   if (req.body.id) user = await persons.findOne({ _id: req.body.id });
   if (user && req.body.email && user.email != req.body.email)
     userEmail = await persons.findOne({ email: req.body.email });
