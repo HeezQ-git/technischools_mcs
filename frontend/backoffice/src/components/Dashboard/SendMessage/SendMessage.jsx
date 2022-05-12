@@ -3,7 +3,7 @@ import './SendMessage.scss';
 import { GroupsService } from '../../../services/groups.service';
 import { UsersService } from '../../../services/users.service';
 import { MailerService } from '../../../services/mailer.service';
-import { handleCommand } from '../../../services/terminal.service';
+import { MessagesService } from '../../../services/messages.service';
 
 import Input from '../../Input/Input';
 import AllMessages from './AllMessages/AllMessages';
@@ -68,13 +68,21 @@ const SendMessage = () => {
 
     setError('');
     setLoading(true);
-
-    const res = await MailerService.sendEmail({
-      title,
-      content,
-      groups: type,
-      type: messageType,
-    });
+    if (messageType === 'email') {
+      const res = await MailerService.sendEmail({
+        title,
+        content,
+        groups: type,
+        type: messageType,
+      });
+    } else if (messageType === 'sms') {
+      const res = await MessagesService.sendMessage({
+        title,
+        content,
+        groups: type,
+        type: messageType,
+      });
+    }
 
     setRefreshMessages(true);
     setLoading(false);
