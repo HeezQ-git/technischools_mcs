@@ -1,5 +1,5 @@
 import { Container, Button } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { UsersService } from '../../../services/users.service';
 import { useNavigate } from 'react-router-dom';
 import './AddUser.scss';
@@ -8,7 +8,7 @@ import { LoadingButton } from '@mui/lab';
 import { TextField } from '@mui/material';
 import { Autocomplete } from '@mui/material';
 import { MdErrorOutline, MdPersonAddAlt } from 'react-icons/md';
-import { types, countries } from './../../../utils/enums';
+import { types } from './../../../utils/enums';
 
 const AddUser = () => {
   const [name, setName] = useState('');
@@ -124,7 +124,7 @@ const AddUser = () => {
             fullWidth
           />
           <div className='addUser_box_buttons'>
-            <Button onClick={() => navigate('/dashboard/panel/')}>Wróć</Button>
+            <Button onClick={() => navigate(-1)}>Wróć</Button>
             <LoadingButton
               variant={document.body.clientWidth <= 480 ? 'text' : 'contained'}
               loading={loading}
