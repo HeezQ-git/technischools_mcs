@@ -2,22 +2,15 @@ import React, { useEffect, useState } from 'react';
 import '../SendMessage.scss';
 import { GroupsService } from '../../../../services/groups.service';
 import { UsersService } from '../../../../services/users.service';
-import { MailerService } from '../../../../services/mailer.service';
 import { MessagesService } from '../../../../services/messages.service';
 
 import Input from '../../../Input/Input';
-import { TextField } from '@mui/material';
-import { Autocomplete } from '@mui/material';
-import { RadioGroup } from '@mui/material';
-import { Radio } from '@mui/material';
-import { FormControlLabel } from '@mui/material';
 import { Button } from '@mui/material';
-
-import { IoMdSend } from 'react-icons/io';
-import { LoadingButton } from '@mui/lab';
+import { Chip } from '@mui/material';
 import { CgSearch } from 'react-icons/cg';
+import { MdExpandMore } from 'react-icons/md';
 
-const AllMessages = ({ refresh }) => {
+const AllMessages = ({ refresh, setRefreshMessages }) => {
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -25,8 +18,13 @@ const AllMessages = ({ refresh }) => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(null);
   const [openedMessage, setOpenedMessage] = useState(null);
+  const [openedReceiver, isOpenedReceiver] = useState(false);
+
   const getUserById = (userId) =>
     users.filter((user) => user._id === userId)[0];
+
+  const getGroupById = (groupId) =>
+    groups.filter((group) => group._id === groupId)[0];
 
   const getUsers = async () => {
     setLoading(true);
@@ -41,7 +39,16 @@ const AllMessages = ({ refresh }) => {
 
     setLoading(false);
   };
+  const getGroups = async () => {
+    setLoading(true);
 
+    const res = await GroupsService.getAllGroups();
+    if (res.data.success) {
+      setGroups(res.data.groups);
+    }
+
+    setLoading(false);
+  };
   const getMessages = async () => {
     setLoading(true);
 
@@ -58,10 +65,18 @@ const AllMessages = ({ refresh }) => {
   };
 
   const searchMessages = () => {};
+
   useEffect(() => {
+    getGroups();
     getUsers();
     getMessages();
   }, []);
+
+  useEffect(() => {
+    console.log('refresh');
+    getMessages();
+    setRefreshMessages(false);
+  }, [refresh]);
 
   return (
     <div className='messages_history'>
@@ -100,8 +115,41 @@ const AllMessages = ({ refresh }) => {
           </div>{' '}
         </>
       ) : (
-        <div className='message_history_message'>
-          <Button onClick={() => setOpenedMessage(null)}>Wróć</Button>
+        <div className='messages_history_opened-message'>
+          <div className='messages_history_opened-message_header'>
+            <Button onClick={() => setOpenedMessage(null)}>Wróć</Button>
+            <h2 className='messages_history_opened-message_header_title'>
+              {openedMessage.title}
+            </h2>
+          </div>
+          <div className='messages_history_opened-message_content'>
+            {openedMessage.content}
+          </div>
+          <div className='messages_history_opened-message_info'>
+            <div
+              className={`messages_history_opened-message_info_receivers ${
+                openedReceiver ? 'opened' : ''
+              }`}
+              onClick={() => {
+                if (openedMessage.receiver.length <= 2) return;
+                isOpenedReceiver(!openedReceiver);
+              }}
+            >
+              {openedMessage.receiver.map((id, index) => {
+                return <Chip key={index} label={getGroupById(id).name} />;
+              })}
+            </div>
+            {openedMessage.receiver.length > 2 && (
+              <h2
+                className={`messages_history_opened-message_info_arrow ${
+                  openedReceiver ? 'flipped' : ''
+                }`}
+                onClick={() => isOpenedReceiver(!openedReceiver)}
+              >
+                <MdExpandMore size={26} className='icon' />
+              </h2>
+            )}
+          </div>
         </div>
       )}
     </div>

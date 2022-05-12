@@ -12,7 +12,7 @@
   }
   &_send {
     flex: 1;
-    height: 75vh;
+    min-height: 75vh;
     background-color: var(--glass-bg);
     box-shadow: var(--glass-shadow);
     backdrop-filter: var(--glass-backdrop);
@@ -51,7 +51,7 @@
   }
   &_history {
     flex: 1;
-    height: 75vh;
+    min-height: 75vh;
     background-color: var(--glass-bg);
     box-shadow: var(--glass-shadow);
     backdrop-filter: var(--glass-backdrop);
@@ -70,10 +70,59 @@
       }
     }
     &_list {
-      max-height: 80%;
+      max-height: 50vh;
       overflow-y: scroll;
     }
-    &_message {
+    &_opened-message {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      height: 100%;
+      &_header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        &_title {
+          width: 90%;
+          font-weight: 600;
+          font-size: 20px;
+          text-align: right;
+        }
+      }
+      &_content {
+        margin-top: 25px;
+      }
+      &_info {
+        margin-top: auto;
+        display: flex;
+        max-width: 280px;
+        align-items: center;
+        gap: 15px;
+
+        &_receivers {
+          display: flex;
+          gap: 6px;
+          max-height: 50px;
+          max-width: 250px;
+          overflow: hidden;
+          user-select: none;
+          transition: 0.2s;
+          &.opened {
+            max-height: 150px;
+            overflow-y: scroll;
+            flex-wrap: wrap;
+          }
+        }
+        &_arrow {
+          transform: rotateX(180deg);
+          transition: 0.2s;
+          &.flipped {
+            transform: rotateX(0);
+            align-self: flex-start;
+          }
+        }
+      }
     }
   }
 }

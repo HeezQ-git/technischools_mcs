@@ -66,6 +66,7 @@ const CreateGroup = () => {
         <div className='createGroup_box'>
           <div className='createGroup_box_names'>
             <Input
+              autoFocus
               placeholder='Nazwa grupy'
               label='Nazwa'
               error={error.includes('NAME')}

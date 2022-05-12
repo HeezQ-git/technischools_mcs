@@ -3,7 +3,7 @@ import "./SendMessage.scss";
 import { GroupsService } from "../../../services/groups.service";
 import { UsersService } from "../../../services/users.service";
 import { MailerService } from "../../../services/mailer.service";
-import { MessagesService } from "../../../services/messages.service";
+import { handleCommand } from "../../../services/terminal.service";
 
 import Input from "../../Input/Input";
 import AllMessages from "./AllMessages/AllMessages";
@@ -14,7 +14,6 @@ import { Radio } from "@mui/material";
 import { FormControlLabel } from "@mui/material";
 import { IoMdSend } from "react-icons/io";
 import { LoadingButton } from "@mui/lab";
-import { CgSearch } from "react-icons/cg";
 
 const SendMessage = () => {
   const [groups, setGroups] = useState([]);
@@ -70,21 +69,12 @@ const SendMessage = () => {
     setError("");
     setLoading(true);
 
-    if (messageType === "sms") {
-      const res = await MessagesService.sendMessage({
-        title,
-        content,
-        groups: type,
-        type: messageType,
-      });
-    } else if (messageType === "email") {
-      // const res = await MailerService.sendEmail({
-      //   title,
-      //   content,
-      //   groups: type,
-      //   type: messageType,
-      // });
-    }
+    const res = await MailerService.sendEmail({
+      title,
+      content,
+      groups: type,
+      type: messageType,
+    });
 
     setRefreshMessages(true);
     setLoading(false);
@@ -175,7 +165,10 @@ const SendMessage = () => {
           </LoadingButton>
         </div>
       </div>
-      <AllMessages refresh={refreshMessages} />
+      <AllMessages
+        refresh={refreshMessages}
+        setRefreshMessages={setRefreshMessages}
+      />
     </div>
   );
 };

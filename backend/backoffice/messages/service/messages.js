@@ -1,6 +1,7 @@
 const Messages = require("../../../models/messages");
 const Groups = require("../../../models/groups");
 const Users = require("../../../models/persons");
+// const jwt = require("jsonwebtoken");
 
 const accountSid = "AC87b375e1ee91c45d08941ba719bdf227";
 const authToken = "287c19108acbdd2836784518d894ad49";
@@ -17,23 +18,24 @@ const sendMessage = async (req, res) => {
     numbers.push(user.telephone);
   }
 
-  Promise.all(
-    numbers.map((number) => {
-      return client.messages.create({
-        to: number,
-        from: "+16822675681",
-        body: "Witam Witam",
-      });
-    })
-  );
+  console.log(req.cookies);
+  // Promise.all(
+  //   numbers.map((number) => {
+  //     return client.messages.create({
+  //       to: number,
+  //       from: "+16822675681",
+  //       body: "Witam Witam",
+  //     });
+  //   })
+  // );
 
-  await Messages.create({
-    type: req.body.type,
-    title: req.body.title,
-    content: req.body.content,
-    receiver: _group.id,
-    sender: "test123",
-  });
+  // await Messages.create({
+  //   type: req.body.type,
+  //   title: req.body.title,
+  //   content: req.body.content,
+  //   receiver: _group.id,
+  //   sender: "test123",
+  // });
 
   return res.status(200).json("dziala");
 };
