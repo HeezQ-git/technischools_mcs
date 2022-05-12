@@ -1,31 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import './SendMessage.scss';
-import { GroupsService } from '../../../services/groups.service';
-import { UsersService } from '../../../services/users.service';
-import { MailerService } from '../../../services/mailer.service';
-import { MessagesService } from '../../../services/messages.service';
+import React, { useEffect, useState } from "react";
+import "./SendMessage.scss";
+import { GroupsService } from "../../../services/groups.service";
+import { UsersService } from "../../../services/users.service";
+import { MailerService } from "../../../services/mailer.service";
+import { MessagesService } from "../../../services/messages.service";
 
-import Input from '../../Input/Input';
-import AllMessages from './AllMessages/AllMessages';
-import { TextField } from '@mui/material';
-import { Autocomplete } from '@mui/material';
-import { RadioGroup } from '@mui/material';
-import { Radio } from '@mui/material';
-import { FormControlLabel } from '@mui/material';
-import { IoMdSend } from 'react-icons/io';
-import { LoadingButton } from '@mui/lab';
-import { CgSearch } from 'react-icons/cg';
+import Input from "../../Input/Input";
+import AllMessages from "./AllMessages/AllMessages";
+import { TextField } from "@mui/material";
+import { Autocomplete } from "@mui/material";
+import { RadioGroup } from "@mui/material";
+import { Radio } from "@mui/material";
+import { FormControlLabel } from "@mui/material";
+import { IoMdSend } from "react-icons/io";
+import { LoadingButton } from "@mui/lab";
+import { CgSearch } from "react-icons/cg";
 
 const SendMessage = () => {
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
   const [type, setType] = useState([]);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(null);
-  const [error, setError] = useState('');
-  const [messageType, setMessageType] = useState('email');
+  const [error, setError] = useState("");
+  const [messageType, setMessageType] = useState("email");
   const [refreshMessages, setRefreshMessages] = useState(true);
 
   const getUserById = (userId) =>
@@ -63,19 +63,28 @@ const SendMessage = () => {
   };
 
   const sendMessage = async () => {
-    if (!title) return setError('TITLE');
-    else if (!content) return setError('CONTENT');
-    else if (!type.length) return setError('GROUPS');
+    if (!title) return setError("TITLE");
+    else if (!content) return setError("CONTENT");
+    else if (!type.length) return setError("GROUPS");
 
-    setError('');
+    setError("");
     setLoading(true);
 
-    const res = await MailerService.sendEmail({
-      title,
-      content,
-      groups: type,
-      type: messageType,
-    });
+    if (messageType === "sms") {
+      const res = await MessagesService.sendMessage({
+        title,
+        content,
+        groups: type,
+        type: messageType,
+      });
+    } else if (messageType === "email") {
+      // const res = await MailerService.sendEmail({
+      //   title,
+      //   content,
+      //   groups: type,
+      //   type: messageType,
+      // });
+    }
 
     setRefreshMessages(true);
     setLoading(false);
@@ -87,33 +96,33 @@ const SendMessage = () => {
   }, []);
 
   return (
-    <div className='messages'>
-      <div className='messages_send'>
-        <div className='messages_send_title'>
+    <div className="messages">
+      <div className="messages_send">
+        <div className="messages_send_title">
           <Input
-            placeholder='Tytuł'
-            label='Tytuł'
-            size='small'
+            placeholder="Tytuł"
+            label="Tytuł"
+            size="small"
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
-              setError('');
+              setError("");
             }}
-            error={error == 'TITLE'}
+            error={error == "TITLE"}
             fullWidth
             required
           />
         </div>
-        <div className='messages_send_textarea'>
+        <div className="messages_send_textarea">
           <Input
-            placeholder='Treść'
-            label='Treść'
+            placeholder="Treść"
+            label="Treść"
             value={content}
             onChange={(e) => {
               setContent(e.target.value);
-              setError('');
+              setError("");
             }}
-            error={error == 'CONTENT'}
+            error={error == "CONTENT"}
             multiline
             minRows={5}
             maxRows={5}
@@ -121,7 +130,7 @@ const SendMessage = () => {
             required
           />
         </div>
-        <div className='messages_send_select'>
+        <div className="messages_send_select">
           <Autocomplete
             disablePortal
             multiple
@@ -129,38 +138,38 @@ const SendMessage = () => {
             value={type}
             onChange={(event, newValue) => {
               setType(newValue);
-              setError('');
+              setError("");
             }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                error={error == 'GROUPS'}
-                label='Nazwa Grupy'
+                error={error == "GROUPS"}
+                label="Nazwa Grupy"
                 required
               />
             )}
           />
         </div>
-        <div className='messages_send_submit'>
+        <div className="messages_send_submit">
           <RadioGroup
             value={messageType}
             onChange={(e) => setMessageType(e.target.value)}
-            className='messages_send_submit_radio'
+            className="messages_send_submit_radio"
           >
             <FormControlLabel
-              value='email'
+              value="email"
               control={<Radio />}
-              label='E-mail'
+              label="E-mail"
             />
-            <FormControlLabel value='sms' control={<Radio />} label='SMS' />
+            <FormControlLabel value="sms" control={<Radio />} label="SMS" />
           </RadioGroup>
           <LoadingButton
-            variant={document.body.clientWidth <= 480 ? 'text' : 'contained'}
+            variant={document.body.clientWidth <= 480 ? "text" : "contained"}
             loading={loading}
-            loadingPosition='start'
+            loadingPosition="start"
             startIcon={<IoMdSend />}
             onClick={() => sendMessage()}
-            className='messages_send_submit_button'
+            className="messages_send_submit_button"
           >
             Wyślij
           </LoadingButton>
