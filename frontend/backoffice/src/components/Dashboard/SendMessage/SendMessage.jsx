@@ -15,6 +15,10 @@ import { FormControlLabel } from '@mui/material';
 import { IoMdSend } from 'react-icons/io';
 import { LoadingButton } from '@mui/lab';
 
+import { EditorState } from 'draft-js';
+// import { Editor } from 'react-draft-wysiwyg';
+// import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+
 const SendMessage = () => {
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
@@ -26,6 +30,9 @@ const SendMessage = () => {
   const [error, setError] = useState('');
   const [messageType, setMessageType] = useState('email');
   const [refreshMessages, setRefreshMessages] = useState(true);
+
+  // const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  // const onEditorStateChange = (editorState) => setEditorState(editorState);
 
   const getUserById = (userId) =>
     users.filter((user) => user._id === userId)[0];
@@ -112,6 +119,20 @@ const SendMessage = () => {
           />
         </div>
         <div className='messages_send_textarea'>
+          {/* <Editor
+            editorState={editorState}
+            toolbarClassName='toolbar-styles'
+            wrapperClassName='wrapperClassName'
+            editorClassName='editorClassName'
+            onEditorStateChange={onEditorStateChange}
+            toolbar={{
+              inline: { inDropdown: true },
+              list: { inDropdown: true },
+              textAlign: { inDropdown: true },
+              link: { inDropdown: true },
+              history: { inDropdown: true },
+            }}
+          /> */}
           <Input
             placeholder='Treść'
             label='Treść'

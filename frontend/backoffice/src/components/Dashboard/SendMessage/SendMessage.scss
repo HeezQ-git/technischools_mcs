@@ -1,5 +1,13 @@
 @import '../../../_mixins.scss';
 
+.App {
+  &:is(.dark) {
+    .rdw-editor-toolbar {
+      background: transparent !important;
+    }
+  }
+}
+
 .messages {
   width: 100%;
   padding-bottom: 25px;
@@ -162,6 +170,11 @@
           user-select: none;
         }
       }
+    }
+    &_time {
+      color: rgb(144, 144, 144);
+      width: 200px;
+      text-align: right;
     }
     &_buttons {
       display: flex;

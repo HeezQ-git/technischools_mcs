@@ -373,7 +373,7 @@ const Groups = () => {
                                     onClick={() =>
                                       navigate(`/dashboard/edit-user/${id}`)
                                     }
-                                    className='select-none ml-auto opacity-0'
+                                    className='select-none user-item_edit-el ml-auto opacity-0'
                                   >
                                     <MdEdit size={19} className='icon' />
                                   </h2>
@@ -499,7 +499,7 @@ const Groups = () => {
                           }`}
                           key={index}
                         >
-                          <span className='user-item hover:drop-shadow-md'>
+                          <span className='user-item user-item-addtogroup hover:drop-shadow-md'>
                             <div className='flex items-center justify-between w-full'>
                               <h4
                                 onClick={() => {
@@ -535,7 +535,8 @@ const Groups = () => {
                                       text={user.email}
                                     >
                                       <Tooltip title={copyTitle}>
-                                        {document.body.clientWidth >= 970 ? (
+                                        {document.body.clientWidth >= 970 &&
+                                        user.email.length < 29 ? (
                                           <span>{user.email}</span>
                                         ) : (
                                           <span>

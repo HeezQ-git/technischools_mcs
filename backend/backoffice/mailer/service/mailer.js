@@ -20,7 +20,7 @@ const sendMail = async (userEmail, content, title) => {
     to: userEmail,
     subject: title,
     text: content,
-    html: `<p>${content}</p>`,
+    html: content,
   });
 
   return info;
@@ -67,6 +67,7 @@ const sendEmail = async (req, res) => {
       content: req.body.content,
       receiver: req.body.groups.map((_) => _.id),
       sender: token.name,
+      date: Date.now(),
     });
   }
 

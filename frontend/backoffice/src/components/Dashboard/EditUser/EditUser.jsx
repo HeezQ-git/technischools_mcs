@@ -137,7 +137,7 @@ const EditUser = () => {
             fullWidth
           />
           <div className='addUser_box_buttons'>
-            <Button onClick={() => navigate('/dashboard/panel/')}>Wróć</Button>
+            <Button onClick={() => navigate(-1)}>Wróć</Button>
             <LoadingButton
               variant='contained'
               loading={loading}

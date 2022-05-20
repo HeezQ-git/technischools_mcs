@@ -10,6 +10,8 @@ import { Chip } from '@mui/material';
 import { CgSearch } from 'react-icons/cg';
 import { MdExpandMore } from 'react-icons/md';
 
+import moment from 'moment';
+
 const AllMessages = ({ refresh, setRefreshMessages }) => {
   const [groups, setGroups] = useState([]);
   const [users, setUsers] = useState([]);
@@ -19,7 +21,8 @@ const AllMessages = ({ refresh, setRefreshMessages }) => {
   const [loading, setLoading] = useState(null);
   const [openedMessage, setOpenedMessage] = useState(null);
   const [openedReceiver, isOpenedReceiver] = useState(false);
-
+  const [date, setDate] = useState(null);
+  const currentDate = new Date();
   const getUserById = (userId) =>
     users.filter((user) => user._id === userId)[0];
 
@@ -99,7 +102,10 @@ const AllMessages = ({ refresh, setRefreshMessages }) => {
               return (
                 <div
                   className='message-item-container'
-                  onClick={() => setOpenedMessage(message)}
+                  onClick={() => {
+                    setDate(new Date(message.date));
+                    setOpenedMessage(message);
+                  }}
                   key={index}
                 >
                   <div className='message-item'>
@@ -107,12 +113,18 @@ const AllMessages = ({ refresh, setRefreshMessages }) => {
                       <div className='message-item_main_title'>
                         {message.title}
                       </div>
+                      <div className='message-item_main_time'>
+                        {currentDate.toISOString().split('T')[0] ==
+                        message.date.split('T')[0]
+                          ? 'Dziś o ' + moment(message.date).format('HH:mm')
+                          : moment(message.date).format('l')}
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
-          </div>{' '}
+          </div>
         </>
       ) : (
         <div className='messages_history_opened-message'>
@@ -149,6 +161,13 @@ const AllMessages = ({ refresh, setRefreshMessages }) => {
                 <MdExpandMore size={26} className='icon' />
               </h2>
             )}
+            <div className='messages_history_opened-message_info_time'>
+              {/* {currentDate.toISOString().split('T')[0] ==
+              date.toISOString().split('T')[0]
+                ? moment(date).format('HH:mm')
+                : moment(date).format('MMM Do YYYY')} */}
+              {moment(date).format('l HH:mm')}
+            </div>
           </div>
         </div>
       )}

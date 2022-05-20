@@ -260,6 +260,9 @@
 }
 .group-item-container {
   width: 80%;
+  @include mobile {
+    max-width: 250px;
+  }
 }
 .group-item {
   width: 100%;
@@ -322,7 +325,9 @@
 }
 .user-item_container {
   height: 40px;
-  max-width: 250px;
+  @include mobile {
+    max-width: 250px;
+  }
   .user-item {
     height: 35px;
     display: flex;
@@ -350,6 +355,9 @@
       height: 40px;
       background: var(--hover-item-color);
     }
+    &_edit-el {
+      margin-right: 10px;
+    }
     @include tablet {
       h2 {
         opacity: 1;
@@ -358,6 +366,7 @@
   }
   &.opened {
     height: 130px;
+
     .user-item {
       display: grid;
       grid-template-columns: auto 30px;
@@ -371,6 +380,12 @@
       &_info {
         grid-row-start: 2;
       }
+    }
+    .user-item-addtogroup {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
     }
   }
   &:hover {
