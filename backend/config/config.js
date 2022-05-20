@@ -6,7 +6,7 @@ mongoose.set('useNewUrlParser', true);
 mongoose.set('useUnifiedTopology', true);
 mongoose.set('useFindAndModify', false);
 
-const hostDB = `mongodb+srv://HeezQ:TechniSchools!@cluster.ehkay.mongodb.net/Technischools?retryWrites=true&w=majority`;
+const hostDB = `mongodb+srv://HeezQ:<password>@cluster.ehkay.mongodb.net/Technischools?retryWrites=true&w=majority`;
 
 module.exports = {
   hostDB,
