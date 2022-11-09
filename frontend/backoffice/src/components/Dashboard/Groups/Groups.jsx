@@ -12,7 +12,6 @@ import {
   MdSave,
   MdCancel,
   MdAdd,
-  MdRemove,
   MdExpandMore,
 } from 'react-icons/md';
 import { CgSearch } from 'react-icons/cg';

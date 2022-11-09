@@ -7,9 +7,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import './index.css';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
-import { grey, blue } from '@mui/material/colors';
+import { grey } from '@mui/material/colors';
 import { useCookies } from 'react-cookie';
-
 const App = () => {
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
   const [theme, setTheme] = useState(false);
@@ -19,6 +18,7 @@ const App = () => {
     if (cookies.theme == null)
       setCookie('theme', prefersDarkMode.matches, { path: '/' });
     setTheme(cookies.theme === 'true');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prefersDarkMode]);
 
   const changeTheme = () => {

@@ -131,6 +131,7 @@ const Panel = () => {
               <div className='pagination'>
                 <Pagination
                   className='flex items-center'
+                  shape='rounded'
                   size={document.body.clientWidth <= 480 ? 'small' : 'medium'}
                   siblingCount={document.body.clientWidth <= 480 ? 0 : 1}
                   count={users.length}
