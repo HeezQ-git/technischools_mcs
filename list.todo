@@ -5,8 +5,8 @@
 - send to unique emails only @done
 - ogarnac messages tab i senders @done
 
-- clean code i zasady pisania (adrian zobaczy)
-- check folders for unnessesary files (adrian zobaczy)
+- clean code i zasady pisania 
+- check folders for unnessesary files
 - import users/groups from a file
 - zrobic bd i naprawic wszystkie funkcje pod sql, zamiast mongo @done
 - przepisac na emotion (prawie done, tylko naprawic grupy i rowne marginy) @done
