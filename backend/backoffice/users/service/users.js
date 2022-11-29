@@ -1,14 +1,14 @@
-const persons = require('./../../../models/persons');
+const db = require('../../../config/database.connection.js');
 
 const getUser = async (req, res) => {
   const response = {
     success: false,
   };
+  const [rows] = await db.query(`SELECT * FROM users WHERE id = ? AND active = 1 and client_id = ?`, [req.body.id, req.decoded.clientId]);
 
-  const user = await persons.findOne({ _id: req.body.id, active: true });
-  if (user) {
-    response.user = user;
+  if (rows.length) {
     response.success = true;
+    response.user = rows[0];
   }
 
   return res.status(200).json(response);
@@ -18,13 +18,11 @@ const getAllUsers = async (req, res) => {
   const response = {
     success: false,
   };
-
-  let allUsers = await persons.find();
-  allUsers = allUsers.filter((e) => e.active);
-
-  if (!!allUsers.length) response.success = true;
-  response.users = allUsers;
-
+  const [users] = await db.query(`SELECT * FROM users WHERE active = 1 AND client_id = ?`, [req.decoded.clientId]);
+  if (users.length) {
+    response.success = true;
+    response.users = users;
+  }
   return res.status(200).json(response);
 };
 
@@ -35,19 +33,26 @@ const addUser = async (req, res) => {
   };
 
   let checkUser = [];
-  if (req.body.email) checkUser = await persons.find({ email: req.body.email });
+  const clientId = req.decoded.clientId;
+
+  if (req.body.email) [checkUser] = await db.query(`SELECT * FROM users WHERE email = ? and client_id = ?`, [req.body.email, clientId]);
 
   if (checkUser.length === 0) {
-    const user = await persons.create({
-      type: req.body.type,
-      name: req.body.name,
-      surname: req.body.surname,
-      email: req.body.email || '',
-      telephone: req.body.number || '',
-    });
+    await db.query(`INSERT INTO users (name, surname, email, phone_number, active, client_id) VALUES (?, ?, ?, ?, 1, ?
+      )`, [
+      req.body.name,
+      req.body.surname,
+      req.body.email || '',
+      req.body.number || '',
+      clientId,
+    ])
+      .then(([rows]) => {
+        response.success = true;
+      })
+      .catch(error => {
+        throw error;
+      });
 
-    if (user) response.success = true;
-    console.log(user);
   } else response.message = 'Użytkownik z takim adresem email już istnieje';
 
   return res.status(200).json(response);
@@ -60,25 +65,26 @@ const editUser = async (req, res) => {
   };
 
   let user, userEmail;
+  const clientId = req.decoded.clientId;
 
-  if (req.body.id) user = await persons.findOne({ _id: req.body.id });
-  if (user && req.body.email && user.email != req.body.email)
-    userEmail = await persons.findOne({ email: req.body.email });
+  if (req.body.id)
+    [user] = await db.query(`SELECT * FROM users WHERE id = ? and client_id = ?`, [req.body.id, clientId]);
+
+
+  if (user[0] && req.body.email && user[0].email != req.body.email)
+    [userEmail] = await db.query(`SELECT * FROM users WHERE email = ? and client_id = ?`, [req.body.email, clientId]);
 
   if (!userEmail) {
-    const user = await persons.updateOne(
-      { _id: req.body.id },
-      {
-        type: req.body.type,
-        name: req.body.name,
-        surname: req.body.surname,
-        email: req.body.email || '',
-        telephone: req.body.number || '',
-      }
-    );
+    await db.query(`UPDATE users SET name = ?, surname = ?, email = ?, phone_number = ? WHERE id = ? and client_id = ?`, [
+      req.body.name,
+      req.body.surname,
+      req.body.email || '',
+      req.body.phone_number || '',
+      req.body.id,
+      clientId,
+    ]);
+    response.success = true;
 
-    if (user) response.success = true;
-    console.log(user);
   } else response.message = 'Użytkownik z takim adresem email już istnieje';
 
   return res.status(200).json(response);
@@ -88,13 +94,12 @@ const deleteUser = async (req, res) => {
   const response = {
     success: false,
   };
+  const [user] = await db.query(`SELECT * FROM users WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
 
-  user = await persons.findOne({ _id: req.body.id });
-  if (user) {
-    await persons.updateOne({ _id: req.body.id }, { active: false });
+  if (user[0]) {
+    db.query(`UPDATE users SET active = 0 WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
     response.success = true;
   }
-
   return res.status(200).json(response);
 };
 

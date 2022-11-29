@@ -1,9 +1,32 @@
-- przepisac na emotion
-- clean code i zasady pisania
-- send grid
-- 
-- --
-- 
-- design. 
-- inne hooki, przepisac, react hook form
-- 
+- naprawic ladowanie userow z grup, cash czy cokolwiek @done
+- manage client (dodaj do tabeli users klucz obcy client_id) @done
+- state i reducer, zapytac sie jak i gdzie warto zmienic @done
+- send grid (napisac po bd) @done
+- send to unique emails only @done
+- ogarnac messages tab i senders @done
+
+- clean code i zasady pisania (adrian zobaczy)
+- check folders for unnessesary files (adrian zobaczy)
+- import users/groups from a file
+- zrobic bd i naprawic wszystkie funkcje pod sql, zamiast mongo @done
+- przepisac na emotion (prawie done, tylko naprawic grupy i rowne marginy) @done
+
+na później:
+- templates of messages 
+- sprawdz, czy uzywasz get 1 user z backendu
+- dodaj naglowki do add user, create group i td @done
+- design. (naprawic odstepy, marginy, paddingi, fonty, kolory, itd) 
+- logo, nazwa
+- w /panel przy hover skacze na gore tooltip @done
+
+templates:
+- zmienic component messageHistory i dodać do niego templates pieknie
+
+ceny:
+    - twillio: $0.0431 / sms
+    - messagebird: $0.035 / sms
+    - infoBip: $0.0313 / sms 
+    - messente: $0.0313 / sms
+
+    - sendgrid: $19.95 / month - 50000/month emails cap
+    - infoBip: €0.0005 / email (from 200k/month emails more worth it than sendgrid)

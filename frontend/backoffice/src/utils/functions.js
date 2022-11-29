@@ -5,3 +5,8 @@ export const formatPhoneNumber = (number) =>
     .join(' ');
 
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
+export const formatDate = (date) => {
+  const newDate = new Date(date);
+  return `${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
+}

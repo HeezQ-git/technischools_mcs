@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const LoginService = {
   login: (data) => axios.post('/api/login', data),
-  createAdminAccount: (data) => axios.post('/api/createAdminAccount', data),
+  logout: () => axios.post('/api/logout'),
   checkSession: (data) => axios.post('/api/checkSession', data),
 };
 

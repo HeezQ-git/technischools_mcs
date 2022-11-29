@@ -3,6 +3,9 @@ const router = express.Router();
 const groupsService = require('./service');
 
 router.post('/api/groups/get-all-groups', groupsService.getAllGroups);
+router.post('/api/groups/get-group-by-id', groupsService.getGroupById);
+router.post('/api/groups/get-groups-users', groupsService.getGroupsUsers);
+router.post('/api/groups/get-all-groups-users', groupsService.getAllGroupsUsers);
 router.post('/api/groups/create-group', groupsService.createGroup);
 router.post('/api/groups/edit-group', groupsService.editGroup);
 router.post('/api/groups/delete-group', groupsService.deleteGroup);

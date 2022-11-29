@@ -1,52 +1,38 @@
 const jwt = require('jsonwebtoken');
-const admin = require('./../../../models/admin');
 const bcrypt = require('bcrypt');
+const db = require('../../../config/database.connection.js');
+require('dotenv').config();
 
-const pass = 'Technischools!';
 const hashPassword = async (password) => await bcrypt.hash(password, 10);
 
 const login = async (req, res) => {
   const response = {
     success: false,
   };
-
-  const account = await admin.findOne({ name: req.body.name });
+  const [account] = await db.query(`SELECT * FROM accounts WHERE username = ?`, [req.body.username]);
   let result;
 
-  if (account)
-    result = await bcrypt.compare(req.body.password, account.password);
-
+  if (account[0])
+    result = await bcrypt.compare(req.body.password, account[0].password);
   if (result) {
-    response.token = jwt.sign({ name: req.body.name }, pass);
+    const token = jwt.sign({ name: req.body.username, clientId: account[0].client_id, accountId: account[0].id }, process.env.PASS);
+    res.cookie('token', token, { maxAge: 15552000, httpOnly: true });
     response.success = true;
   }
-
   return res.status(200).json(response);
+
 };
 
-const createAdminAccount = async (req, res) => {
-  const response = {
-    success: false,
-  };
-
-  const user = await admin.findOne({ name: req.body.name });
-
-  if (!user && req.body.name && req.body.password) {
-    const password = await hashPassword(req.body.password);
-
-    await admin.create({ name: req.body.name, password: password });
-
-    response.success = true;
-  }
-
-  return res.status(200).json(response);
+const logout = async (req, res) => {
+  res.clearCookie('token');
+  return res.status(200).json({ success: true });
 };
 
 const checkSession = async (req, res) => {
   try {
     return res
       .status(200)
-      .json({ success: req.body.token && jwt.verify(req.body.token, pass) });
+      .json({ success: (!!req.cookies.token && !!jwt.verify(req.cookies.token, process.env.PASS)) });
   } catch {
     return res.status(200).json({ success: false });
   }
@@ -54,6 +40,8 @@ const checkSession = async (req, res) => {
 
 module.exports = {
   login,
-  createAdminAccount,
+  logout,
   checkSession,
 };
+
+

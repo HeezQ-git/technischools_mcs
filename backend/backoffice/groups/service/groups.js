@@ -1,17 +1,45 @@
-const groups = require('./../../../models/groups');
-const persons = require('./../../../models/persons');
+const db = require('../../../config/database.connection.js');
+require('dotenv').config();
 
 const getAllGroups = async (req, res) => {
   const response = {
     success: false,
   };
 
-  let allGroups = await groups.find();
-  allGroups = allGroups.filter((e) => e.active);
+  const [allGroups] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE active = 1 and client_id = ?`, [req.decoded.clientId]);
+
   if (!!allGroups.length) response.success = true;
+
   response.groups = allGroups;
 
   return res.status(200).json(response);
+};
+
+const getGroupById = async (req, res) => {
+  const response = {
+    success: false,
+  };
+
+  const [group] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
+
+  if (!!group.length) response.success = true;
+  response.group = group[0];
+
+  return res.status(200).json(response);
+};
+
+const getGroupsUsers = async (req, res) => {
+  const [groupsUsers] = await db.query(`SELECT * FROM groups_users
+                                        JOIN users ON users.id = groups_users.user_id
+                                        WHERE group_id = ? and users.client_id = ?`, [req.body.id, req.decoded.clientId]);
+  return res.status(200).json(groupsUsers);
+};
+
+const getAllGroupsUsers = async (req, res) => {
+  const [groupsUsers] = await db.query(`SELECT * FROM groups_users
+                                        JOIN users ON users.id = groups_users.user_id
+                                        WHERE users.client_id = ?`, [req.decoded.clientId]);
+  return res.status(200).json(groupsUsers);
 };
 
 const createGroup = async (req, res) => {
@@ -19,42 +47,48 @@ const createGroup = async (req, res) => {
     success: false,
     message: '',
   };
+  const clientId = req.decoded.clientId;
 
-  let checkGroup = [];
-  if (req.body.email) checkUser = await groups.find({ email: req.body.email });
-
+  const [checkGroup] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE name = ? and client_id = ?`, [req.body.name, clientId]);
   if (checkGroup.length === 0) {
-    const group = await groups.create({
-      name: req.body.name,
-      userid: req.body.userIds || [],
+    await db.query(`INSERT INTO ${process.env.DB_NAME}.groups (name, client_id, active) VALUES (?, ?, 1)`, [
+      req.body.name,
+      clientId,
+    ]);
+    req.body.userIds.forEach(async (userId) => {
+      const [group] = await db.query(`SELECT id FROM ${process.env.DB_NAME}.groups WHERE name = ? and client_id = ?`, [req.body.name, clientId]);
+      const groupId = group[0].id;
+      await db.query(`INSERT INTO groups_users (group_id, user_id) VALUES (?, ?)`, [
+        groupId,
+        userId
+      ]);
     });
 
-    if (group) response.success = true;
+    response.success = true;
   } else response.message = 'Grupa pod taką nazwą już istnieje';
 
   return res.status(200).json(response);
 };
+
 const editGroup = async (req, res) => {
   const response = {
     success: false,
   };
+  const [group] = await db.query(`UPDATE ${process.env.DB_NAME}.groups SET name = ? WHERE id = ?`, [req.body.name, req.body.id]);
 
-  const group = await groups.updateOne(
-    { _id: req.body.id },
-    {
-      name: req.body.name,
-    }
-  );
-  if (group) response.success = true;
+  response.success = true;
+
+  if (group[0]) response.success = true;
 
   return res.status(200).json(response);
 };
+
 const deleteGroup = async (req, res) => {
   const response = {
     success: false,
   };
 
-  await groups.updateOne({ _id: req.body.id }, { active: false });
+  await db.query(`UPDATE ${process.env.DB_NAME}.groups SET active = 0 WHERE id = ?`, [req.body.id]);
   response.success = true;
 
   return res.status(200).json(response);
@@ -64,14 +98,11 @@ const addToGroup = async (req, res) => {
   const response = {
     success: false,
   };
-
-  const group = await groups.findOne({ _id: req.body.groupId });
-  if (group && req.body.userId && !group.userid.includes(req.body.userId)) {
-    group.userid.push(req.body.userId);
-
-    await groups.updateOne({ _id: req.body.groupId }, group);
-    response.success = true;
-  }
+  await db.query(`INSERT INTO groups_users (group_id, user_id) VALUES (?, ?)`, [
+    req.body.groupId,
+    req.body.userId
+  ]);
+  response.success = true;
 
   return res.status(200).json(response);
 };
@@ -81,19 +112,20 @@ const removeFromGroup = async (req, res) => {
     success: false,
   };
 
-  const group = await groups.findOne({ _id: req.body.groupId });
-  if (group && req.body.userId) {
-    group.userid = group.userid.filter((_) => _ != req.body.userId);
-
-    await groups.updateOne({ _id: req.body.groupId }, group);
-    response.success = true;
-  }
+  await db.query(`DELETE FROM groups_users WHERE group_id = ? AND user_id = ?`, [
+    req.body.groupId,
+    req.body.userId
+  ]);
+  response.success = true;
 
   return res.status(200).json(response);
 };
 
 module.exports = {
   getAllGroups,
+  getGroupById,
+  getGroupsUsers,
+  getAllGroupsUsers,
   createGroup,
   editGroup,
   deleteGroup,

@@ -1,5 +1,4 @@
 import { GroupsService } from './groups.service';
-import { MailerService } from './mailer.service';
 import { MessagesService } from './messages.service';
 import { UsersService } from './users.service';
 
@@ -76,7 +75,7 @@ const handleCommand = async (command) => {
           surname: null,
           type: null,
           email: null,
-          number: null,
+          phone_number: null,
         };
 
         range(0, args.length, 2).forEach((param) => {

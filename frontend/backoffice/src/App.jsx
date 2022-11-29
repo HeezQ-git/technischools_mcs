@@ -1,49 +1,48 @@
+/** @jsxImportSource @emotion/react */
 import { Routes, Route } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
-import './App.scss';
-import Login from './components/Login/Login';
+import { useState, useEffect, useMemo, createContext } from 'react';
+import { AppStyles } from './app.styles';
+import Login from './pages/Login/Login';
 import Header from './components/Header/Header';
-import Dashboard from './components/Dashboard/Dashboard';
-import './index.css';
+import Dashboard from './pages/Dashboard/Dashboard';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@mui/system';
 import { grey } from '@mui/material/colors';
 import { useCookies } from 'react-cookie';
+import { Global } from '@emotion/react'
+import emotionTailwindPreflight from "emotion-tailwind-preflight";
+
+export const ThemeContext = createContext();
+
 const App = () => {
   const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
-  const [theme, setTheme] = useState(false);
+  const [theme, setTheme] = useState('light');
   const [cookies, setCookie] = useCookies(['theme']);
-
-  useEffect(() => {
-    if (cookies.theme == null)
-      setCookie('theme', prefersDarkMode.matches, { path: '/' });
-    setTheme(cookies.theme === 'true');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefersDarkMode]);
-
   const changeTheme = () => {
     if (cookies.theme == null) {
-      setCookie('theme', prefersDarkMode.matches, { path: '/' });
-      return setTheme(prefersDarkMode.matches);
+      setCookie('theme', 'light', { path: '/' });
+      return  setTheme(cookies.theme);
     }
-    if (theme != null || theme != undefined) {
-      setCookie('theme', !theme, { path: '/' });
-      setTheme(!theme);
+    if ((theme != null || theme !== undefined) && theme === 'light') {
+      setCookie('theme', 'dark', { path: '/' });
+    } else {
+      setCookie('theme', 'light', { path: '/' });
     }
+    setTheme(cookies.theme);
   };
-
-  const muiTheme = React.useMemo(
+  
+  const muiTheme = useMemo(
     () =>
-      createTheme({
-        palette: {
-          mode: theme ? 'dark' : 'light',
-          text: {
-            primary: theme ? grey[200] : grey[700],
-            secondary: theme ? grey[300] : grey[800],
+    createTheme({
+      palette: {
+        mode: theme,
+        text: {
+          primary: theme === 'dark' ? grey[200] : grey[700],
+            secondary: theme === 'dark' ? grey[300] : grey[800],
           },
           primary: {
-            main: theme ? 'rgba(250,250,250,0.7)' : 'rgba(70,70,70,0.4)',
-            dark: theme ? 'rgba(250,250,250,0.4)' : 'rgba(70,70,70,0.5)',
+            main: theme === 'dark' ? 'rgba(250,250,250,0.7)' : 'rgb(57,19,202) ',
+            dark: theme === 'dark' ? 'rgba(250,250,250,0.4)' : 'rgb(43, 14, 160) ',
           },
         },
         components: {
@@ -51,31 +50,48 @@ const App = () => {
             root: {},
           },
         },
-      }),
+        shape: {
+          borderRadius: 10,
+        }, 
+    }),
     [theme]
   );
-
+      
+  const themeValue = useMemo(() => ({ theme }), [theme]);
+      
+  useEffect(() => {
+    if (cookies.theme == null)
+    setCookie('theme', 'light', { path: '/' });
+    setTheme(cookies.theme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefersDarkMode]);  
   return (
-    <div className={'App' + (theme ? ' dark' : ' light')}>
-      <ThemeProvider theme={muiTheme}>
-        <div className='limit-content'>
-          {window.location.pathname != '/' && (
-            <Header theme={theme} changeTheme={changeTheme} />
-          )}
-          <Routes>
-            <Route
-              path='/'
-              element={
-                <div className='center-content'>
-                  <Login theme={theme} />
+    
+    <ThemeContext.Provider value={themeValue}>
+      <Global styles={AppStyles.global(theme, emotionTailwindPreflight)} />
+      <div css={AppStyles.app(theme)}>
+        <ThemeProvider theme={muiTheme}>
+          <div css={AppStyles.container}>
+            <Routes>
+              <Route
+                path='/'
+                element={
+                  <div css={AppStyles.centered}>
+                    <Login theme={theme}/>
+                  </div>
+                }
+              />
+              <Route path='/dashboard/*' element={
+                <div>  
+                  <Header theme={theme} changeTheme={changeTheme}/>
+                  <Dashboard />
                 </div>
-              }
-            />
-            <Route path='/dashboard/*' element={<Dashboard />} />
-          </Routes>
-        </div>
-      </ThemeProvider>
-    </div>
+              } />
+            </Routes>
+          </div>
+        </ThemeProvider>
+      </div>
+    </ThemeContext.Provider>
   );
 };
 
