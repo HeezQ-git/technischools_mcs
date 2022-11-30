@@ -2,7 +2,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { MessagesHistoryStyles, SendMessageStyles } from './messages.styles';
 import { MessagesService } from '../../../services/messages.service';
-
+import { FaSms } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
 import Input from '../../../components/Input/Input';
 import { Button } from '@mui/material';
 import { Chip } from '@mui/material';
@@ -37,7 +38,6 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
     const res = await MessagesService.getAllMessages();
     if (res.data.success) {
       setMessages(res.data.messages);
-      console.log(res.data.messages);
     }
 
     setLoading(false);
@@ -48,6 +48,7 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
       return (message.title.toLowerCase().includes(data.toLowerCase()) 
       || message.content.toLowerCase().includes(data.toLowerCase()) 
       || formatDate(message.date).includes(data.toLowerCase()))
+      || message.type.toLowerCase().includes(data.toLowerCase());
     });
     setFilteredMessages(filtered);
   };
@@ -96,6 +97,7 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
                   <div css={MessagesHistoryStyles.messageItem}>
                     <div css={MessagesHistoryStyles.messageMain(theme)}>
                       <div css={MessagesHistoryStyles.messageTitle}>
+                        {message.type === 'sms' ? <FaSms /> : <MdEmail />}
                         {message.title}
                       </div>
                       <div css={MessagesHistoryStyles.messageDate}>

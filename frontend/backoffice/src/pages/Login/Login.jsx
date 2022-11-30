@@ -2,22 +2,19 @@ import { useState, useEffect } from 'react';
 /** @jsxImportSource @emotion/react */
 import { LoginStyles } from './login.styles';
 import { LoginService } from '../../services/login.service';
-import { Box, Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import Input from '../../components/Input/Input';
-import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router-dom';
 import { MdOutlineError } from 'react-icons/md';
 import logo_dark from './../../assets/images/techni_logo_white.png';
 import logo_light from './../../assets/images/techni_logo_purple.png';
 
-const Login = ({ theme, setLoggedOut }) => {
+const Login = ({ theme }) => {
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [cookies, setCookie] = useCookies(['token']);
 
   const login = async () => {
     setLoading(true);
@@ -51,7 +48,7 @@ const Login = ({ theme, setLoggedOut }) => {
           <Typography css={LoginStyles.title} component='span'>
             Logowanie
           </Typography>
-          <Grid css={LoginStyles.inputs}>
+          <div css={LoginStyles.inputs}>
             <Input
               onChange={(e) => {
                 setUser(e.target.value);
@@ -78,7 +75,7 @@ const Login = ({ theme, setLoggedOut }) => {
               }
               fullWidth
             />
-          </Grid>
+          </div>
           <Typography component='span'>
             {error && (
               <p css={LoginStyles.loginError}>
@@ -86,7 +83,7 @@ const Login = ({ theme, setLoggedOut }) => {
               </p>
             )}
           </Typography>
-          <Grid css={LoginStyles.button}>
+          <div css={LoginStyles.button}>
             <LoadingButton
               loading={loading}
               variant='contained'
@@ -94,7 +91,7 @@ const Login = ({ theme, setLoggedOut }) => {
             >
               Zaloguj się
             </LoadingButton>
-          </Grid>
+          </div>
         </div>
       </Box>
     </Container>

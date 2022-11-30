@@ -1,5 +1,4 @@
 import { GroupsService } from './groups.service';
-import { MessagesService } from './messages.service';
 import { UsersService } from './users.service';
 
 const range = (start, stop, step = 1) =>
@@ -32,9 +31,9 @@ const newError = (num) => {
       return 'Nieprawidłowa składnia';
     case 2:
       return 'Brak wymaganych argumentów';
+    default:
+      return 'Wystąpił błąd';
   }
-
-  return null;
 };
 
 const capitalizeFirst = (value) =>
@@ -56,7 +55,7 @@ const handleCommand = async (command) => {
 
     switch (commands[0].split(' ')[0]) {
       case '/add':
-        args = cmd == commands[0] ? args.splice(1, args.length - 1) : args;
+        args = cmd === commands[0] ? args.splice(1, args.length - 1) : args;
 
         if (
           TOKENS.some(
@@ -104,7 +103,7 @@ const handleCommand = async (command) => {
 
       case '/create':
         args =
-          cmd == commands[0]
+          cmd === commands[0]
             ? args.splice(1, args.length - 1).join(' ')
             : args.join(' ');
 
@@ -120,6 +119,7 @@ const handleCommand = async (command) => {
 
         break;
       case '/help':
+        break;
 
       default:
         response.info = 'Nie ma takiej komendy';

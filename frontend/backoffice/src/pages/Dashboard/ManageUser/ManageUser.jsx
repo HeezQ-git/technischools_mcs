@@ -58,7 +58,7 @@ const ManageUser = () => {
     });
 
     if (res.data.success) navigate(-1);
-    else dispatch({ type: 'set', field: 'responseError', value: res.data.error });
+    else dispatch({ type: 'set', field: 'responseError', value: res.data.message });
 
     dispatch({ type: 'set', field: 'loading', value: false });
   };
@@ -104,9 +104,9 @@ const ManageUser = () => {
             placeholder='Adres email'
             label='Adres email'
             value={state.email}
-            error={!!state.responseError.length || state.error.includes('EMAIL')}
+            error={state.error.includes('EMAIL')}
             // eslint-disable-next-line no-mixed-operators
-            helperText={state.error.includes('EMAIL') && 'Adres email jest wymagany' || state.responseError}
+            helperText={state.error.includes('EMAIL') && 'Adres email jest wymagany'}
             onChange={(e) => {
               dispatch({ type: 'set', field: 'email', value: e.target.value });
               dispatch({ type: 'remove', field: 'error', value: 'EMAIL' });
@@ -115,7 +115,7 @@ const ManageUser = () => {
             fullWidth
           />
           {state.responseError && (
-            <div css={ManageUser.responseError}>
+            <div css={ManageUserStyles.responseError}>
               <MdErrorOutline size={18} />
               <p>{state.responseError}</p>
             </div>

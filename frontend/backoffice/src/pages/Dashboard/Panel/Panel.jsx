@@ -89,7 +89,6 @@ const Panel = () => {
     getUsers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log(users);
   return (
     <div css={PanelStyles.panel}>
       <div css={PanelStyles.container(theme)}>

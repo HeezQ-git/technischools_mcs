@@ -5,18 +5,21 @@
 - send to unique emails only @done
 - ogarnac messages tab i senders @done
 
-- clean code i zasady pisania 
-- check folders for unnessesary files
-- import users/groups from a file
+- clean code i zasady pisania @done
+- check folders for unnessesary files @done
 - zrobic bd i naprawic wszystkie funkcje pod sql, zamiast mongo @done
 - przepisac na emotion (prawie done, tylko naprawic grupy i rowne marginy) @done
 
-na później:
+- implement singleton (mysql2 lub prisma)
+- implement pagination with prisma
+- zrob username unique dla findUnique
+- logo - ? , nazwa - holoub (50% done)
+- raporty w dashboard
+- import users/groups from a file
 - templates of messages 
-- sprawdz, czy uzywasz get 1 user z backendu
+- sprawdz, czy uzywasz get 1 user z backendu @done
 - dodaj naglowki do add user, create group i td @done
 - design. (naprawic odstepy, marginy, paddingi, fonty, kolory, itd) 
-- logo, nazwa
 - w /panel przy hover skacze na gore tooltip @done
 
 templates:

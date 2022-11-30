@@ -49,7 +49,7 @@ export const PanelStyles = {
         border-radius: 12px;
         transition: all 0.2s ease-in-out;
         &:hover {
-            background-color: ${themes[theme].backgroundColor};
+            background-color: ${themes[theme].hoverItemColor};
             height: 55px;
             ${include.mobile} {
                 height: 125px;
