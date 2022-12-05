@@ -1,14 +1,26 @@
-const db = require('../../../config/database.connection.js');
+const prisma = require('../../../config/database.connection.js');
 
 const getUser = async (req, res) => {
   const response = {
     success: false,
   };
-  const [rows] = await db.query(`SELECT * FROM users WHERE id = ? AND active = 1 and client_id = ?`, [req.body.id, req.decoded.clientId]);
 
-  if (rows.length) {
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      users: {
+        where: {
+          id: parseInt(req.body.id),
+          active: true
+        }
+      }
+    }
+  })
+  if (users[0]) {
     response.success = true;
-    response.user = rows[0];
+    response.user = users[0];
   }
 
   return res.status(200).json(response);
@@ -18,7 +30,20 @@ const getAllUsers = async (req, res) => {
   const response = {
     success: false,
   };
-  const [users] = await db.query(`SELECT * FROM users WHERE active = 1 AND client_id = ?`, [req.decoded.clientId]);
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      users: {
+        where: {
+          active: true
+        }
+      }
+    }
+  });
+
+
   if (users.length) {
     response.success = true;
     response.users = users;
@@ -31,29 +56,42 @@ const addUser = async (req, res) => {
     success: false,
     message: '',
   };
-
-  let checkUser = [];
+  const data = req.body;
   const clientId = req.decoded.clientId;
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: clientId,
+    },
+    select: {
+      users: {
+        where: {
+          email: data.email,
+          active: true
+        }
+      }
+    }
+  });
 
-  if (req.body.email) [checkUser] = await db.query(`SELECT * FROM users WHERE email = ? and client_id = ?`, [req.body.email, clientId]);
+  if (!users[0]) {
+    const creation = await prisma.users.create({
+      data: {
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+        phone_number: data.phone_number,
+        active: true,
+        clients: {
+          connect: {
+            id: clientId
+          }
+        }
 
-  if (checkUser.length === 0) {
-    await db.query(`INSERT INTO users (name, surname, email, phone_number, active, client_id) VALUES (?, ?, ?, ?, 1, ?
-      )`, [
-      req.body.name,
-      req.body.surname,
-      req.body.email || '',
-      req.body.number || '',
-      clientId,
-    ])
-      .then(([rows]) => {
-        response.success = true;
-      })
-      .catch(error => {
-        throw error;
-      });
-
-  } else response.message = 'Użytkownik z takim adresem email już istnieje';
+      }
+    })
+    if (creation) {
+      response.success = true;
+    }
+  }
 
   return res.status(200).json(response);
 };
@@ -64,27 +102,38 @@ const editUser = async (req, res) => {
     message: '',
   };
 
-  let user, userEmail;
   const clientId = req.decoded.clientId;
+  const data = req.body;
+  const id = parseInt(data.id);
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: clientId,
+    },
+    select: {
+      users: {
+        where: {
+          email: data.email,
+          active: true
+        }
+      }
+    }
+  });
+  if ((users[0] && users[0].id === id) || !users[0]) {
+    const update = await prisma.users.update({
+      where: {
+        id: id
+      },
+      data: {
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+        phone_number: data.phone_number,
+      }
+    });
 
-  if (req.body.id)
-    [user] = await db.query(`SELECT * FROM users WHERE id = ? and client_id = ?`, [req.body.id, clientId]);
-
-
-  if (user[0] && req.body.email && user[0].email != req.body.email)
-    [userEmail] = await db.query(`SELECT * FROM users WHERE email = ? and client_id = ?`, [req.body.email, clientId]);
-
-  if (!userEmail) {
-    await db.query(`UPDATE users SET name = ?, surname = ?, email = ?, phone_number = ? WHERE id = ? and client_id = ?`, [
-      req.body.name,
-      req.body.surname,
-      req.body.email || '',
-      req.body.phone_number || '',
-      req.body.id,
-      clientId,
-    ]);
-    response.success = true;
-
+    if (update) {
+      response.success = true;
+    }
   } else response.message = 'Użytkownik z takim adresem email już istnieje';
 
   return res.status(200).json(response);
@@ -94,11 +143,33 @@ const deleteUser = async (req, res) => {
   const response = {
     success: false,
   };
-  const [user] = await db.query(`SELECT * FROM users WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
+  const id = req.body.id;
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      users: {
+        where: {
+          id: id,
+          active: true
+        }
+      }
+    }
+  })
 
-  if (user[0]) {
-    db.query(`UPDATE users SET active = 0 WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
-    response.success = true;
+  if (users[0]) {
+    const deletion = await prisma.users.update({
+      where: {
+        id: id
+      },
+      data: {
+        active: false
+      }
+    })
+    if (deletion) {
+      response.success = true;
+    }
   }
   return res.status(200).json(response);
 };

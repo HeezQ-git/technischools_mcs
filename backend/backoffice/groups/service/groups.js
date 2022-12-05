@@ -1,4 +1,4 @@
-const db = require('../../../config/database.connection.js');
+const prisma = require('../../../config/database.connection.js');
 require('dotenv').config();
 
 const getAllGroups = async (req, res) => {
@@ -6,11 +6,28 @@ const getAllGroups = async (req, res) => {
     success: false,
   };
 
-  const [allGroups] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE active = 1 and client_id = ?`, [req.decoded.clientId]);
+  const { groups } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      groups: {
+        where: {
+          active: true,
+        },
+        include: {
+          users: {
+            where: {
+              active: true,
+            }
+          }
+        }
+      },
+    },
+  });
 
-  if (!!allGroups.length) response.success = true;
-
-  response.groups = allGroups;
+  if (!!groups.length) response.success = true;
+  response.groups = groups;
 
   return res.status(200).json(response);
 };
@@ -19,11 +36,21 @@ const getGroupById = async (req, res) => {
   const response = {
     success: false,
   };
+  const group = await prisma.groups.findUnique({
+    where: {
+      id: req.body.id,
+    },
+    include: {
+      users: {
+        where: {
+          active: true,
+        },
+      },
+    },
+  });
 
-  const [group] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE id = ? and client_id = ?`, [req.body.id, req.decoded.clientId]);
-
-  if (!!group.length) response.success = true;
-  response.group = group[0];
+  if (group) response.success = true;
+  response.group = group;
 
   return res.status(200).json(response);
 };
@@ -33,14 +60,14 @@ const getGroupsUsers = async (req, res) => {
                                         JOIN users ON users.id = groups_users.user_id
                                         WHERE group_id = ? and users.client_id = ?`, [req.body.id, req.decoded.clientId]);
   return res.status(200).json(groupsUsers);
-};
+}; //! to jest to samo, co wyzej, tylko bez prismy, trzeba usunac
 
 const getAllGroupsUsers = async (req, res) => {
   const [groupsUsers] = await db.query(`SELECT * FROM groups_users
                                         JOIN users ON users.id = groups_users.user_id
                                         WHERE users.client_id = ?`, [req.decoded.clientId]);
   return res.status(200).json(groupsUsers);
-};
+}; //! to jest to samo, co wyzej, tylko bez prismy, trzeba usunac
 
 const createGroup = async (req, res) => {
   const response = {
@@ -49,23 +76,53 @@ const createGroup = async (req, res) => {
   };
   const clientId = req.decoded.clientId;
 
-  const [checkGroup] = await db.query(`SELECT * FROM ${process.env.DB_NAME}.groups WHERE name = ? and client_id = ?`, [req.body.name, clientId]);
-  if (checkGroup.length === 0) {
-    await db.query(`INSERT INTO ${process.env.DB_NAME}.groups (name, client_id, active) VALUES (?, ?, 1)`, [
-      req.body.name,
-      clientId,
-    ]);
-    req.body.userIds.forEach(async (userId) => {
-      const [group] = await db.query(`SELECT id FROM ${process.env.DB_NAME}.groups WHERE name = ? and client_id = ?`, [req.body.name, clientId]);
-      const groupId = group[0].id;
-      await db.query(`INSERT INTO groups_users (group_id, user_id) VALUES (?, ?)`, [
-        groupId,
-        userId
-      ]);
+  const { groups } = await prisma.clients.findUnique({
+    where: {
+      id: clientId,
+    },
+    select: {
+      groups: {
+        where: {
+          name: req.body.name,
+        },
+      },
+    },
+  });
+  const users = await prisma.users.findMany({
+    where: {
+      id: {
+        in: req.body.userIds,
+      },
+    },
+  });
+
+  if (groups.length) {
+    response.message = 'Grupa pod taką nazwą już istnieje';
+  } else {
+    const group = await prisma.groups.create({
+      data: {
+        name: req.body.name,
+        clients: {
+          connect: {
+            id: clientId,
+          }
+        },
+        users: {
+          create: users.map(user => ({
+            users: {
+              connect: {
+                id: user.id,
+              },
+            },
+          }))
+        }
+      },
     });
 
-    response.success = true;
-  } else response.message = 'Grupa pod taką nazwą już istnieje';
+    if (group) {
+      response.success = true;
+    }
+  }
 
   return res.status(200).json(response);
 };

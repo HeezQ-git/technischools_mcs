@@ -101,7 +101,7 @@ const Groups = ({ openGroup }) => {
     (async () => {
       setLoadingGroupsUsers(true);
       if (chosenGroup) {
-        dispatch({type: 'set', field: 'currentUsers', value: await getGroupsUsers(chosenGroup.id)});
+        dispatch({type: 'set', field: 'currentUsers', value: chosenGroup.users});
       }
       setLoadingGroupsUsers(false);
     })();

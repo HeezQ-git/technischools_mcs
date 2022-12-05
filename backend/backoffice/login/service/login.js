@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const db = require('../../../config/database.connection.js');
+const prisma = require('../../../config/database.connection.js');
 require('dotenv').config();
 
 const hashPassword = async (password) => await bcrypt.hash(password, 10);
@@ -9,13 +9,17 @@ const login = async (req, res) => {
   const response = {
     success: false,
   };
-  const [account] = await db.query(`SELECT * FROM accounts WHERE username = ?`, [req.body.username]);
-  let result;
+  const account = await prisma.accounts.findFirst({
+    where: {
+      username: req.body.username,
+    },
+  });
 
-  if (account[0])
-    result = await bcrypt.compare(req.body.password, account[0].password);
+  let result;
+  if (account)
+    result = await bcrypt.compare(req.body.password, account.password);
   if (result) {
-    const token = jwt.sign({ name: req.body.username, clientId: account[0].client_id, accountId: account[0].id }, process.env.PASS);
+    const token = jwt.sign({ name: req.body.username, clientId: account.client_id, accountId: account.id }, process.env.PASS);
     res.cookie('token', token, { maxAge: 15552000, httpOnly: true });
     response.success = true;
   }
