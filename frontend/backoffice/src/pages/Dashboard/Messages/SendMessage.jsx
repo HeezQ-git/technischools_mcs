@@ -41,10 +41,11 @@ const SendMessage = () => {
     const res = await GroupsService.getAllGroups();
     if (res.data.success) {
       res.data.groups.forEach((group) => {
-        dispatch({type: 'add', field: 'groups', value: { label: group.name, id: group.id }});
+        dispatch({type: 'add', field: 'groups', value: { label: group.name, id: group.id, users: group.users }});
       });
     }
     setLoading(false);
+    console.log(state.groups);
   };
 
   const sendMessage = async () => {
@@ -57,7 +58,6 @@ const SendMessage = () => {
         title: state.title,
         content: state.content,
         receivers: state.receiverGroups,
-        receiverGroups: state.receiverGroups,
         type: state.type,
       });
       if (res.data.success) {
@@ -70,6 +70,7 @@ const SendMessage = () => {
   useEffect(() => {
     getGroups();
     getUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

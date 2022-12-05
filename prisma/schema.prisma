@@ -10,7 +10,6 @@ datasource db {
 model clients {
   id       Int        @id @default(autoincrement())
   name     String     @db.VarChar(255)
-  email    String     @db.VarChar(255)
   accounts accounts[]
   groups   groups[]
   users    users[]
@@ -20,6 +19,7 @@ model accounts {
   id        Int        @id @default(autoincrement())
   username  String     @db.VarChar(255)
   password  String     @db.VarChar(255)
+  email     String     @db.VarChar(255)
   client_id Int
   clients   clients    @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "accounts_ibfk_1")
   messages  messages[]
@@ -28,64 +28,66 @@ model accounts {
 }
 
 model groups {
-  id        Int               @id @default(autoincrement())
-  name      String            @db.VarChar(255)
+  id        Int        @id @default(autoincrement())
+  name      String     @db.VarChar(255)
   client_id Int
-  active    Boolean           @default(true)
-  clients   clients           @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_ibfk_1")
-  users     groups_users[]
-  messages  messages_groups[]
+  active    Boolean    @default(true)
+  clients   clients    @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_ibfk_1")
+  users     users[]
+  messages  messages[]
+  // groups_users groups_users[]
 
   @@index([client_id], map: "client_id")
   @@map("groups")
 }
 
 model users {
-  id           Int            @id @default(autoincrement())
-  name         String         @db.VarChar(255)
-  surname      String         @db.VarChar(255)
-  email        String         @db.VarChar(255)
-  phone_number String         @db.VarChar(9)
-  active       Boolean        @default(true)
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  surname      String   @db.VarChar(255)
+  email        String   @db.VarChar(255)
+  phone_number String   @db.VarChar(9)
+  active       Boolean  @default(true)
   client_id    Int
-  groups       groups_users[]
-  clients      clients        @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_client_id_fk")
+  groups       groups[]
+  clients      clients  @relation(fields: [client_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_client_id_fk")
+  // groups_users groups_users[]
 
   @@index([client_id], map: "users_client_id_fk")
   @@map("users")
 }
 
-model groups_users {
-  user_id  Int
-  group_id Int
-  users    users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_users_ibfk_1")
-  groups   groups @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_users_ibfk_2")
+//  model groups_users { @ignore
+//   user_id  Int
+//   group_id Int
+//   users    users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_users_ibfk_1")
+//   groups   groups @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "groups_users_ibfk_2")
 
-  @@id([user_id, group_id])
-  @@index([group_id], map: "group_id")
-  @@index([user_id], map: "user_id")
-}
+//   @@id([user_id, group_id])
+//   @@index([group_id], map: "group_id")
+//   @@index([user_id], map: "user_id")
+// }
 
 model messages {
-  id         Int               @id @default(autoincrement())
-  type       String            @db.VarChar(255)
-  title      String            @db.VarChar(255)
-  content    String            @db.Text
+  id         Int      @id @default(autoincrement())
+  type       String   @db.VarChar(255)
+  title      String   @db.VarChar(255)
+  content    String   @db.Text
   account_id Int
-  date       DateTime          @db.DateTime(0)
-  accounts   accounts          @relation(fields: [account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_ibfk_1")
-  groups     messages_groups[]
+  date       DateTime @db.DateTime(0)
+  accounts   accounts @relation(fields: [account_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_ibfk_1")
+  receivers  groups[]
 
   @@index([account_id], map: "account_id")
 }
 
-model messages_groups {
-  message_id Int
-  group_id   Int
-  messages   messages @relation(fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_groups_ibfk_1")
-  groups     groups   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_groups_ibfk_2")
+// model messages_groups { @ignore
+//   message_id Int
+//   group_id   Int
+//   messages   messages @relation(fields: [message_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_groups_ibfk_1")
+//   groups     groups   @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "messages_groups_ibfk_2")
 
-  @@id([message_id, group_id])
-  @@index([group_id], map: "group_id")
-  @@index([message_id], map: "message_id")
-}
+//   @@id([message_id, group_id])
+//   @@index([group_id], map: "group_id")
+//   @@index([message_id], map: "message_id")
+// }

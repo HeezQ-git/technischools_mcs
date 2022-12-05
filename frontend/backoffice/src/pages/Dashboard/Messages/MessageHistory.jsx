@@ -5,7 +5,7 @@ import { MessagesService } from '../../../services/messages.service';
 import { FaSms } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import Input from '../../../components/Input/Input';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { Chip } from '@mui/material';
 import { CgSearch } from 'react-icons/cg';
 import { MdExpandMore } from 'react-icons/md';
@@ -13,10 +13,10 @@ import { css } from '@emotion/core';
 import moment from 'moment';
 import { ThemeContext } from '../../../App';
 import { formatDate } from '../../../utils/functions';
+import { useNavigate } from 'react-router';
 
 const MessageHistory = ({ refresh, setRefreshMessages }) => {
   const [messages, setMessages] = useState([]);
-  const [receiverGroups, setReceiverGroups] = useState([]);
   const [openedMessage, setOpenedMessage] = useState(null);
   const [openedReceiver, isOpenedReceiver] = useState(false);
   const [filteredMessages, setFilteredMessages] = useState([]);
@@ -24,12 +24,7 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
   const currentDate = new Date();
 
   const {theme} = useContext(ThemeContext);
-
-  const getMessagesGroups = async (id) => {
-    const res = await MessagesService.getMessagesGroups({id: id});
-    setReceiverGroups(res.data);
-
-  };
+  const navigate = useNavigate();
 
   const getMessages = async () => {
     setLoading(true);
@@ -84,15 +79,14 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
               messages
               .filter((e) => !filteredMessages.length || filteredMessages.find((f) => f.id === e.id))
               .reverse()
-              .map((message, index) => {
+              .map((message) => {
               return (
                 <div
                   css={SendMessageStyles.fullWidth}
                   onClick={() => {
                     setOpenedMessage(message);
-                    getMessagesGroups(message.id);
                   }}
-                  key={index}
+                  key={message.id}
                 >
                   <div css={MessagesHistoryStyles.messageItem}>
                     <div css={MessagesHistoryStyles.messageMain(theme)}>
@@ -138,11 +132,11 @@ const MessageHistory = ({ refresh, setRefreshMessages }) => {
                   isOpenedReceiver(!openedReceiver);
                 }}
               >
-                {receiverGroups.map((group, index) => {
-                  return <Chip key={index} label={group.name} />;
+                {openedMessage.receivers.map((group, index) => {
+                  return <Tooltip title='Przenieś do grupy'><Chip key={index} label={group.name} onClick={() => navigate(`/dashboard/groups/${group.id}`)} /></Tooltip>;
                 })}
               </div>
-              {receiverGroups.length > 2 && (
+              {openedMessage.receivers.length > 2 && (
                 <h2
                 css={MessagesHistoryStyles.arrow(openedReceiver)}
                   onClick={() => isOpenedReceiver(!openedReceiver)}

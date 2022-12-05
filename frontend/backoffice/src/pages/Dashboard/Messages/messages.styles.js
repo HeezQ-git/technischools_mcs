@@ -44,7 +44,7 @@ export const SendMessageStyles = {
 export const MessagesHistoryStyles = {
     history: (theme) => css`
         flex: 1;
-        min-height: 75vh;
+        height: 75vh;
         background-color: ${themes[theme].backgroundPrimary};
         border-radius: 20px;
         padding: 24px;

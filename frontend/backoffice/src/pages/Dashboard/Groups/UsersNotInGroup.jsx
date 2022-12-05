@@ -31,7 +31,8 @@ const UsersNotInGroup = ({ openSection, opened }) => {
     const addToGroup = async (groupId, user) => {
         dispatch({type: 'add', field: 'currentUsers', value: user});
         await GroupsService.addToGroup({ groupId, userId: user.id });
-      };
+    };
+
     return (
         <div css={GroupsStyles.usersListContainer(theme, 'out')}>
                 <div

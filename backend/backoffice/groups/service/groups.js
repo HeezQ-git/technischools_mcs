@@ -28,7 +28,6 @@ const getAllGroups = async (req, res) => {
 
   if (!!groups.length) response.success = true;
   response.groups = groups;
-
   return res.status(200).json(response);
 };
 
@@ -36,46 +35,35 @@ const getGroupById = async (req, res) => {
   const response = {
     success: false,
   };
-  const group = await prisma.groups.findUnique({
+  const { groups } = await prisma.clients.findUnique({
     where: {
-      id: req.body.id,
+      id: req.decoded.clientId,
     },
-    include: {
-      users: {
+    select: {
+      groups: {
         where: {
-          active: true,
+          id: parseInt(req.body.id),
+          active: true
         },
-      },
-    },
+        include: {
+          users: {
+            where: {
+              active: true,
+            }
+          }
+        }
+      }
+    }
   });
 
-  if (group) response.success = true;
-  response.group = group;
+  if (groups.length) response.success = true;
+
+  response.group = groups[0];
 
   return res.status(200).json(response);
 };
 
-const getGroupsUsers = async (req, res) => {
-  const [groupsUsers] = await db.query(`SELECT * FROM groups_users
-                                        JOIN users ON users.id = groups_users.user_id
-                                        WHERE group_id = ? and users.client_id = ?`, [req.body.id, req.decoded.clientId]);
-  return res.status(200).json(groupsUsers);
-}; //! to jest to samo, co wyzej, tylko bez prismy, trzeba usunac
-
-const getAllGroupsUsers = async (req, res) => {
-  const [groupsUsers] = await db.query(`SELECT * FROM groups_users
-                                        JOIN users ON users.id = groups_users.user_id
-                                        WHERE users.client_id = ?`, [req.decoded.clientId]);
-  return res.status(200).json(groupsUsers);
-}; //! to jest to samo, co wyzej, tylko bez prismy, trzeba usunac
-
-const createGroup = async (req, res) => {
-  const response = {
-    success: false,
-    message: '',
-  };
-  const clientId = req.decoded.clientId;
-
+const checkIfGroupExists = async (name, clientId) => {
   const { groups } = await prisma.clients.findUnique({
     where: {
       id: clientId,
@@ -83,60 +71,74 @@ const createGroup = async (req, res) => {
     select: {
       groups: {
         where: {
-          name: req.body.name,
-        },
-      },
-    },
-  });
-  const users = await prisma.users.findMany({
-    where: {
-      id: {
-        in: req.body.userIds,
-      },
-    },
-  });
+          name: name,
+          active: true
+        }
+      }
+    }
 
-  if (groups.length) {
+  });
+  console.log('groups', groups);
+  return !!groups.length;
+};
+
+const createGroup = async (req, res) => {
+  const response = {
+    success: false,
+    message: '',
+  };
+
+  const data = req.body;
+  const clientId = req.decoded.clientId;
+  const exists = await checkIfGroupExists(data.name, clientId);
+
+  if (exists) {
     response.message = 'Grupa pod taką nazwą już istnieje';
   } else {
     const group = await prisma.groups.create({
       data: {
-        name: req.body.name,
+        name: data.name,
         clients: {
           connect: {
             id: clientId,
           }
         },
         users: {
-          create: users.map(user => ({
-            users: {
-              connect: {
-                id: user.id,
-              },
-            },
-          }))
+          connect: data.userIds.map((userId) => ({ id: userId })),
         }
       },
     });
-
-    if (group) {
-      response.success = true;
-    }
+    if (group) response.success = true;
+    console.log('group', group);
   }
-
+  console.log(response, checkIfGroupExists(data.name, req.decoded.clientId));
   return res.status(200).json(response);
 };
 
 const editGroup = async (req, res) => {
   const response = {
     success: false,
+    message: '',
   };
-  const [group] = await db.query(`UPDATE ${process.env.DB_NAME}.groups SET name = ? WHERE id = ?`, [req.body.name, req.body.id]);
 
-  response.success = true;
+  const data = req.body;
+  const exists = await checkIfGroupExists(data.name, req.decoded.clientId);
+  console.log('exists', exists);
+  if (exists) {
+    response.error = true;
+  } else {
+    const update = await prisma.groups.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        name: data.name,
+      }
+    });
 
-  if (group[0]) response.success = true;
+    if (update) response.success = true;
 
+  };
   return res.status(200).json(response);
 };
 
@@ -145,8 +147,16 @@ const deleteGroup = async (req, res) => {
     success: false,
   };
 
-  await db.query(`UPDATE ${process.env.DB_NAME}.groups SET active = 0 WHERE id = ?`, [req.body.id]);
-  response.success = true;
+  const update = await prisma.groups.update({
+    where: {
+      id: req.body.id,
+    },
+    data: {
+      active: false,
+    },
+  });
+
+  if (update) response.success = true;
 
   return res.status(200).json(response);
 };
@@ -155,11 +165,18 @@ const addToGroup = async (req, res) => {
   const response = {
     success: false,
   };
-  await db.query(`INSERT INTO groups_users (group_id, user_id) VALUES (?, ?)`, [
-    req.body.groupId,
-    req.body.userId
-  ]);
-  response.success = true;
+  const update = await prisma.groups.update({
+    where: {
+      id: req.body.groupId,
+    },
+    data: {
+      users: {
+        connect: { id: req.body.userId }
+      }
+    }
+  });
+
+  if (update) response.success = true;
 
   return res.status(200).json(response);
 };
@@ -169,11 +186,18 @@ const removeFromGroup = async (req, res) => {
     success: false,
   };
 
-  await db.query(`DELETE FROM groups_users WHERE group_id = ? AND user_id = ?`, [
-    req.body.groupId,
-    req.body.userId
-  ]);
-  response.success = true;
+  const update = await prisma.groups.update({
+    where: {
+      id: req.body.groupId,
+    },
+    data: {
+      users: {
+        disconnect: { id: req.body.userId }
+      }
+    }
+  });
+
+  if (update) response.success = true;
 
   return res.status(200).json(response);
 };
@@ -181,8 +205,6 @@ const removeFromGroup = async (req, res) => {
 module.exports = {
   getAllGroups,
   getGroupById,
-  getGroupsUsers,
-  getAllGroupsUsers,
   createGroup,
   editGroup,
   deleteGroup,

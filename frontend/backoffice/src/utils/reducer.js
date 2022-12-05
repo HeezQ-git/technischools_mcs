@@ -33,6 +33,7 @@ export const initialCreateGroupState = {
     error: [],
     addedUsers: [],
     users: [],
+    responseError: '',
 }
 export const initialManageUserState = {
     name: '',

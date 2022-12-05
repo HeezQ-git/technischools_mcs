@@ -18,7 +18,7 @@ import { ThemeContext } from '../../../App';
 import { css } from '@emotion/core';
 import { GroupsContext } from './Groups';
 
-const UsersInGroup = ({ openSection, opened, loading }) => {
+const UsersInGroup = ({ openSection, opened }) => {
     const [copyTitle, setCopyTitle] = useState('Skopiuj');
     const [userOpened, setUserOpened] = useState([false, null]);
     const {theme} = useContext(ThemeContext);
@@ -50,7 +50,7 @@ const UsersInGroup = ({ openSection, opened, loading }) => {
                 ) : null}
               </div>
               <div ref={userListRef}></div>
-              {chosenGroup && !loading ? (
+              {chosenGroup ? (
                 <div css={GroupsStyles.userItemsList(opened)}>
                   {opened &&
                     groupState.currentUsers
@@ -151,7 +151,7 @@ const UsersInGroup = ({ openSection, opened, loading }) => {
                 </div>
               ) : (
                 <h3 css={GroupsStyles.chooseGroupTitle
-                }>{loading ? 'Ładuję listę użytkowników...' : 'Wybierz grupę'}</h3>
+                }>Wybierz grupę</h3>
               )}
     </div>
   );

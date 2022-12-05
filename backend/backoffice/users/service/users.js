@@ -1,5 +1,57 @@
 const prisma = require('../../../config/database.connection.js');
 
+const getAllUsers = async (req, res) => {
+  const response = {
+    success: false,
+  };
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      users: {
+        where: {
+          active: true
+        }
+      }
+    }
+  });
+
+
+  if (users.length) {
+    response.success = true;
+    response.users = users;
+  }
+  return res.status(200).json(response);
+};
+
+const getUsersPerPage = async (req, res) => {
+  ``
+  const response = {
+    success: false,
+  };
+  const { users } = await prisma.clients.findUnique({
+    where: {
+      id: req.decoded.clientId,
+    },
+    select: {
+      users: {
+        where: {
+          active: true
+        },
+        skip: req.body.skip,
+        take: req.body.take
+      }
+    }
+  });
+
+  if (users.length) response.success = true;
+
+  response.users = users;
+  return res.status(200).json(response);
+
+};
+
 const getUser = async (req, res) => {
   const response = {
     success: false,
@@ -23,31 +75,6 @@ const getUser = async (req, res) => {
     response.user = users[0];
   }
 
-  return res.status(200).json(response);
-};
-
-const getAllUsers = async (req, res) => {
-  const response = {
-    success: false,
-  };
-  const { users } = await prisma.clients.findUnique({
-    where: {
-      id: req.decoded.clientId,
-    },
-    select: {
-      users: {
-        where: {
-          active: true
-        }
-      }
-    }
-  });
-
-
-  if (users.length) {
-    response.success = true;
-    response.users = users;
-  }
   return res.status(200).json(response);
 };
 
@@ -176,6 +203,7 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   getAllUsers,
+  getUsersPerPage,
   getUser,
   addUser,
   editUser,

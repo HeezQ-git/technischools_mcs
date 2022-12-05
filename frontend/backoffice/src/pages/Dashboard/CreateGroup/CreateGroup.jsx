@@ -34,7 +34,7 @@ const CreateGroup = () => {
       name: state.name,
       userIds,
     });
-
+    dispatch({ type: 'set', field: 'responseError', value: res.data.message });
     if (res.data.success) navigate('/dashboard/groups');
 
     setLoading(false);
@@ -66,7 +66,10 @@ const CreateGroup = () => {
               autoFocus
               placeholder='Nazwa grupy'
               label='Nazwa'
-              error={state.error.includes('NAME')}
+              error={state.error.includes('NAME') || state.responseError}
+              helperText={
+                state.error.includes('NAME') ? 'Nazwa grupy jest wymagana' : state.responseError
+              }
               value={state.name}
               onChange={(e) => {
                 dispatch({ type: 'set', field: 'name', value: e.target.value });

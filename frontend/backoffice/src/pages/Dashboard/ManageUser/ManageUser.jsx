@@ -7,7 +7,7 @@ import { useParams } from 'react-router';
 import { ManageUserStyles } from './manageUser.styles';
 import Input from '../../../components/Input/Input';
 import { LoadingButton } from '@mui/lab';
-import { MdErrorOutline, MdPersonAddAlt } from 'react-icons/md';
+import { MdPersonAddAlt } from 'react-icons/md';
 import { ThemeContext } from '../../../App';
 import { useContext } from 'react';
 import { reducer, initialManageUserState } from '../../../utils/reducer';
@@ -40,7 +40,6 @@ const ManageUser = () => {
     else if (!state.email) return dispatch({ type: 'add', field: 'error', value: 'EMAIL' });
     else if (!state.email.match(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/)) return dispatch({ type: 'add', field: 'error', value: 'EMAIL SYNTAX' });
     if (state.phone_number && state.phone_number.length !== 9) return dispatch({ type: 'add', field: 'error', value: 'PHONE_NUMBER' });
-
     dispatch({ type: 'set', field: 'error', value: [] });
     dispatch({ type: 'set', field: 'loading', value: true });    
 
@@ -59,7 +58,6 @@ const ManageUser = () => {
 
     if (res.data.success) navigate(-1);
     else dispatch({ type: 'set', field: 'responseError', value: res.data.message });
-
     dispatch({ type: 'set', field: 'loading', value: false });
   };
 
@@ -104,9 +102,11 @@ const ManageUser = () => {
             placeholder='Adres email'
             label='Adres email'
             value={state.email}
-            error={state.error.includes('EMAIL')}
+            error={state.error.includes('EMAIL') || state.error.includes('EMAIL SYNTAX') || !!state.responseError}
             // eslint-disable-next-line no-mixed-operators
-            helperText={state.error.includes('EMAIL') && 'Adres email jest wymagany'}
+            helperText={(state.error.includes('EMAIL') && 'Adres email jest wymagany') 
+              || (state.error.includes('EMAIL SYNTAX') && 'Adres email jest niepoprawny')
+              || (state.responseError && 'Adres email jest już zajęty')}
             onChange={(e) => {
               dispatch({ type: 'set', field: 'email', value: e.target.value });
               dispatch({ type: 'remove', field: 'error', value: 'EMAIL' });
@@ -114,18 +114,12 @@ const ManageUser = () => {
             required
             fullWidth
           />
-          {state.responseError && (
-            <div css={ManageUserStyles.responseError}>
-              <MdErrorOutline size={18} />
-              <p>{state.responseError}</p>
-            </div>
-          )}
           <Input
             placeholder='Numer telefonu'
             label='Numer telefonu'
             type='number'
-            error={state.error.includes('NUMBER')}
-            helperText={state.error.includes('NUMBER') && 'Numer telefonu powinien zawierać 9 cyfr'}
+            error={state.error.includes('PHONE_NUMBER')}
+            helperText={state.error.includes('PHONE_NUMBER') && 'Numer telefonu powinien zawierać 9 cyfr'}
             value={state.phone_number}
             onChange={(e) => dispatch({ type: 'set', field: 'phone_number', value: e.target.value })}
             fullWidth

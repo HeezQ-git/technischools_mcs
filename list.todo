@@ -10,9 +10,20 @@
 - zrobic bd i naprawic wszystkie funkcje pod sql, zamiast mongo @done
 - przepisac na emotion (prawie done, tylko naprawic grupy i rowne marginy) @done
 
-- implement singleton (mysql2 lub prisma)
-- implement pagination with prisma
-- zrob username unique dla findUnique
+- implement singleton (no need in this) @done
+- loading in groups @done
+- implement pagination with prisma @done
+- click everything, check errors messages etc. @done
+- delete group jak w panel @done
+- make response message handler in most of the places @done
+- remake error handling
+- rwd panel
+- make custom functions for prisma communication
+- clean architecture blog.cleancoder.com/uncle...
+- rwd header @done
+- zrob username unique dla findUnique @done
+- ogarnij unique wartosci, zeby prisma sama je sprawdzala !!! chyba nie warto
+- przepisz editing w groupslist
 - logo - ? , nazwa - holoub (50% done)
 - raporty w dashboard
 - import users/groups from a file
@@ -20,6 +31,7 @@
 - sprawdz, czy uzywasz get 1 user z backendu @done
 - dodaj naglowki do add user, create group i td @done
 - design. (naprawic odstepy, marginy, paddingi, fonty, kolory, itd) 
+- rwd naprawic
 - w /panel przy hover skacze na gore tooltip @done
 
 templates:
@@ -33,3 +45,4 @@ ceny:
 
     - sendgrid: $19.95 / month - 50000/month emails cap
     - infoBip: €0.0005 / email (from 200k/month emails more worth it than sendgrid)
+8.12.2022 spotkanie z klientem

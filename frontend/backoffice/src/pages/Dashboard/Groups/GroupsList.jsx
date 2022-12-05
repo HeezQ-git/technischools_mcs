@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { GroupsService } from '../../../services/groups.service';
 import { useEffect, useState } from 'react';
-import { Tooltip, CircularProgress } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import {
   MdDelete,
   MdEdit,
@@ -19,50 +19,54 @@ import { css } from '@emotion/core';
 import { GroupsContext } from './Groups';
 import { useNavigate } from 'react-router-dom';
 
-const GroupsList = ({ scrollToUserList, getGroups }) => {
-  const [loading, setLoading] = useState(false);
+const GroupsList = ({ scrollToUserList, getGroups, loading }) => {
   const [editing, setEditing] = useState(false);
   const [newName, setNewName] = useState('');
   const [filteredGroups, setFilteredGroups] = useState([]);
   const [hoverGroup, setHoverGroup] = useState(null);
-  const [groupsUsers, setGroupsUsers] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteTitle, setDeleteTitle] = useState('Usuń');
+  const [editingError, setEditingError] = useState(false);
 
   const {theme} = useContext(ThemeContext);
   const navigate = useNavigate();
   const {groupState, chosenGroup, setChosenGroup} = useContext(GroupsContext);
 
-  const loadGroupsUsers = async () => {
-    const res = await GroupsService.getAllGroupsUsers();
-    setGroupsUsers(res.data);
-  };
-
   const removeGroup = async (id) => {
-      if (!editing[0] || editing[1] !== id) {
-      await GroupsService.deleteGroup({ id: id });
+        if (confirmDelete) {
+          setDeleteTitle('Usuwam...');
+          const res = await GroupsService.deleteGroup({id});
+          if (res.data.success) {
+            getGroups();
+            setDeleteTitle('Usunięto!');
+          }
+        } else {
+          setDeleteTitle('Kliknij, aby potwierdzić');
+          setConfirmDelete(true);    
+        }
 
-      getGroups();
-      setChosenGroup(null);
-      } else {
-      if (!editing[0]) return setEditing([true, id]);
-      if (id !== editing[1]) setEditing([editing[0], id]);
-      else setEditing([!editing[0], id]);
+      if (chosenGroup?.id === id) {
+        setChosenGroup(null);
       }
   };
 
-  const editGroup = async (id) => {
-    setLoading(true);
-
-    if (!editing[0] || editing[1] !== id) setEditing([!editing[0], id]);
-    else if (newName) {
-      await GroupsService.editGroup({ id, name: newName });
-
-      getGroups();
-      if (!editing[0]) return setEditing([true, id]);
-      if (id !== editing[1]) setEditing([editing[0], id]);
-      else setEditing([!editing[0], id]);
+  const editGroup = async (id, prev) => {
+    setEditingError(false);
+    if (!editing || editing !== id) setEditing(id);    
+    else if (newName && newName !== prev) {
+      const res = await GroupsService.editGroup({ id, name: newName });
+      if (res.data.success) {
+        console.log('success');
+        getGroups();
+        setEditing(null);
+        setNewName('');
+      } else {
+        console.log(res.data)
+        setEditingError(true);
+      }
+    } else {
+      setEditing(null);
     }
-
-    setLoading(false);
   };
 
   const searchGroup = async (data) => {
@@ -73,11 +77,10 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
     const foundGroups = [];
     
     for await (const group of groupState.groups) {
-      const groupsUser = groupsUsers.filter((groupUser) => groupUser.group_id === group.id);
       if (
         group.name.toLowerCase().includes(data) ||
         (groupState.groups.indexOf(group) + 1).toString() === data ||
-        !!groupsUser.filter( 
+        !!group.users.filter( 
           (u) =>
             `${u.name.toLowerCase()} ${u.surname.toLowerCase()}`.includes(data) ||
             `${u.surname.toLowerCase()} ${u.name.toLowerCase()}`.includes(data)
@@ -87,7 +90,7 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
   
     setFilteredGroups(foundGroups);
   };
-  
+
   useEffect(() => {
     getGroups();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,10 +98,8 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
   
   useEffect(() => {
     setFilteredGroups([]);
-    loadGroupsUsers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupState.groups]);
-  
   return (
         <div css={GroupsStyles.groupsListContainer(theme)}>
           <div css={GroupsStyles.groupsListSearch}>
@@ -107,7 +108,6 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
               starticon={<CgSearch />}
               placeholder='Szukaj grupy...'
               onChange={(e) => searchGroup(e.target.value)}
-              onFocus={() => loadGroupsUsers()}
             />
             <Tooltip title='Utwórz grupę'>
               <a href='/dashboard/create-group'>
@@ -116,12 +116,12 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
             </Tooltip>
           </div>
           <div css={GroupsStyles.groupsList}>
-            {loading && !groupState.groups && (
+            {loading ? (
               <div css={GroupsStyles.groupsListLoader}>
-                <CircularProgress /> <span>Ładuję grupy...</span>
+                 <span>Ładuję grupy...</span>
               </div>
-            )}
-            {groupState.groups
+            ) :
+            (groupState.groups
             .filter((e) => !filteredGroups.length || filteredGroups.find((f) => f.id === e.id))
             .map((group, index) => {
               return (
@@ -136,7 +136,7 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
                         <div
                           css={GroupItemStyles.groupItemNames}
                           onClick={() => {
-                            if (editing[0]) return;
+                            if (!!editing) return;
                             setChosenGroup(group);
                             navigate(`/dashboard/groups/${group.id}`);
                             scrollToUserList();
@@ -144,7 +144,7 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
                         >
                           <h2>
                             {groupState.groups.indexOf(group) + 1}.{' '}
-                            {!editing[0] || editing[1] !== group.id ? (
+                            {!editing || editing !== group.id ? (
                               group.name
                             ) : (
                               <Input
@@ -152,9 +152,10 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
                                 size='small'
                                 placeholder={group.name}
                                 onChange={(e) => setNewName(e.target.value)}
+                                error={editingError}
                                 onKeyDown={(e) =>
                                   `${e.code}`.toLowerCase() === 'enter' &&
-                                  editGroup(group.id)
+                                  editGroup(group.id, group.name)
                                 }
                               />
                             )}
@@ -165,56 +166,61 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
                         <div
                           css={GroupItemStyles.groupItemNames}
                           onDoubleClick={() => {
-                            if (editing[0]) return;
+                            if (!!editing) return;
                             setChosenGroup(group);
                             scrollToUserList();
                           }}
                         >
                           <h2>
                             {groupState.groups.indexOf(group) + 1}.{' '}
-                            {!editing[0] || editing[1] !== group.id ? (
+                            {!editing || editing !== group.id ? (
                               group.name
                             ) : (
                               <Input
                                 css={GroupItemStyles.renameInput}
                                 size='small'
-                                placeholder={group.name}
+                                placeholder={'name'}
+                                error={editingError}
                                 onChange={(e) => setNewName(e.target.value)}
                                 onKeyDown={(e) =>
                                   `${e.code}`.toLowerCase() === 'enter' &&
-                                  editGroup(group.id)
+                                  editGroup(group.id, group.name)
                                 }
                               />
                             )}
                           </h2>
                         </div>
                       </MobileView>
-                      {!editing[0] || editing[1] !== group.id ? (
+                      {!editing || editing !== group.id ? (
                         <div 
-                            css={GroupItemStyles.groupItemButtons(chosenGroup && chosenGroup.id === group.id, hoverGroup === group.id, editing[0] && editing[1] === group.id)}
+                            css={GroupItemStyles.groupItemButtons(chosenGroup && chosenGroup.id === group.id, hoverGroup === group.id, editing && editing === group.id)}
                         >
                           <Tooltip title='Edytuj'>
-                            <h2 onClick={() => editGroup(group.id)}>
+                            <h2 onClick={() => editGroup(group.id, group.name)}>
                               <MdEdit size={19} className='icon' />
                             </h2>
                           </Tooltip>
-                          <Tooltip title='Usuń'>
-                            <h2 onDoubleClick={() => removeGroup(group.id)}>
+                          <Tooltip title={deleteTitle}>
+                            <h2 onClick={() => removeGroup(group.id)}
+                                onMouseLeave={() => {
+                                  setDeleteTitle('Usuń');
+                                  setConfirmDelete(false);
+                                }}>
                               <MdDelete size={19} className='icon' />
                             </h2>
                           </Tooltip>
                         </div>
                       ) : (
                         <div 
-                            css={GroupItemStyles.groupItemButtons(chosenGroup && chosenGroup.id === group.id, hoverGroup === group.id, editing[0] && editing[1] === group.id)}
+                            css={GroupItemStyles.groupItemButtons(chosenGroup && chosenGroup.id === group.id, hoverGroup === group.id, editing && editing === group.id)}
                         >
                           <Tooltip title='Zapisz'>
-                            <h2 onClick={() => editGroup(group.id)}>
+                            <h2 onClick={() => editGroup(group.id, group.name)}>
                               <MdSave size={20} className='icon' />
                             </h2>
                           </Tooltip>
                           <Tooltip title='Anuluj'>
-                            <h2 onClick={() => removeGroup(group.id)}>
+                            <h2 onClick={() => setEditing(null)}>
                               <MdCancel size={20} className='icon' />
                             </h2>
                           </Tooltip>
@@ -224,7 +230,7 @@ const GroupsList = ({ scrollToUserList, getGroups }) => {
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
         </div> 
 

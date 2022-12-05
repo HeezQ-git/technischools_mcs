@@ -112,5 +112,6 @@ export const PanelStyles = {
         opacity: 0.3;
         user-select: none;
         font-size: .9em;
+        
     `,
 }

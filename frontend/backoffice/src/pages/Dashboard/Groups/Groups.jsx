@@ -19,8 +19,7 @@ const Groups = ({ openGroup }) => {
   const [tablet, isTablet] = useState(document.body.clientWidth <= 768);
   const [groupState, dispatch] = useReducer(reducer, initialGroupsState);
   const [chosenGroup, setChosenGroup] = useState(null);
-  const [loadingGroupsUsers, setLoadingGroupsUsers] = useState(null);
-
+  const [loadingGroups, setLoadingGroups] = useState(null);
   const {theme} = useContext(ThemeContext);
   const userListRef = createRef();
   const { id } = useParams();
@@ -48,10 +47,12 @@ const Groups = ({ openGroup }) => {
 
 
   const getGroups = async () => {
+    setLoadingGroups(true);
     const res = await GroupsService.getAllGroups();
     if (res.data.success) {
       dispatch({type: 'set', field: 'groups', value: res.data.groups});
     }
+    setLoadingGroups(false);
   };
 
   const getUsers = async () => {
@@ -61,8 +62,6 @@ const Groups = ({ openGroup }) => {
       dispatch({type: 'set', field: 'users', value: res.data.users});
     };
   };
-
-  const getGroupsUsers = async (id) => (await GroupsService.getGroupsUsers({ id: id })).data;
 
   const openSection = (type) => {
     if (!tablet) return;
@@ -99,11 +98,9 @@ const Groups = ({ openGroup }) => {
   }, []); // loads groups and users
   useEffect(() => {
     (async () => {
-      setLoadingGroupsUsers(true);
       if (chosenGroup) {
         dispatch({type: 'set', field: 'currentUsers', value: chosenGroup.users});
       }
-      setLoadingGroupsUsers(false);
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chosenGroup]); // gets groups users when group is chosen
@@ -120,6 +117,7 @@ const Groups = ({ openGroup }) => {
         <GroupsList 
           scrollToUserList={scrollToUserList}
           getGroups={getGroups}
+          loading={loadingGroups}
         />
 
         <div css={GroupsStyles.main}>
@@ -136,7 +134,6 @@ const Groups = ({ openGroup }) => {
             <UsersInGroup 
               openSection={openSection} 
               opened={groupState.openedListSection}
-              loading={loadingGroupsUsers}
             />
             <UsersNotInGroup 
               openSection={openSection} 

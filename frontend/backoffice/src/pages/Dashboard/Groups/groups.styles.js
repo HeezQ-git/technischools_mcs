@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { themes } from '../../../constants/colors.styles';
+import { colors, themes } from '../../../constants/colors.styles';
 import { include } from '../../../constants/mixins.styles';
 
 export const GroupsStyles = {
@@ -63,6 +63,10 @@ export const GroupsStyles = {
         }
     `,
     groupsListLoader: css`
+        color: ${colors.grayAlert}
+        font-size: 18px;
+        margin-block: 48px;
+        font-weight: 500;
         display: flex;
         align-items: center;
         justify-content: space-around;
@@ -166,7 +170,7 @@ export const GroupsStyles = {
         color: ${themes[theme].textPrimary};
     `,
     chooseGroupTitle: css`
-        color: #c2c2c2; //! TO DO ZMIANY
+        color: ${colors.grayAlert};
         font-size: 20px;
         font-weight: 500;
         text-align: center;
@@ -183,7 +187,7 @@ export const UserItemStyles = {
     container: (opened) => css`
         height: ${opened ? 130 : 40}px;
         ${include.mobile} {
-            max - width: 250px;
+            // max-width: 250px;
         }
         &:hover {
             h2 {
@@ -241,7 +245,7 @@ export const GroupItemStyles = {
     container: css`
         width: 80%;
         ${include.mobile} {
-            max-width: 250px;
+            // max-width: 250px;
         }
     `,
     groupItem: css`

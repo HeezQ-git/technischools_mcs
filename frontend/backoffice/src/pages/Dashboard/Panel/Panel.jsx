@@ -9,19 +9,18 @@ import { delay } from '../../../utils/functions';
 import { MdPersonAdd, MdRefresh } from 'react-icons/md';
 import { CgSearch } from 'react-icons/cg';
 import { Pagination } from '@mui/material';
-import { getPage, paginate } from '../../../utils/pagination';
 import Items from './Items';
 import { useContext } from 'react';
 import { ThemeContext } from '../../../App';
 import { PanelStyles } from './panel.styles';
 import { css } from '@emotion/react';
 
-const usersPerPage = 5;
+const usersPerPage = 10;
 
 const Panel = () => {
   const [allUsers, setAllUsers] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [currentItems, setCurrentItems] = useState(null);
+  const [currentItems, setCurrentItems] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [copyTitle, setCopyTitle] = useState('Skopiuj');
   const [loading, setLoading] = useState(false);
@@ -29,12 +28,10 @@ const Panel = () => {
 
   const { theme } = useContext(ThemeContext);
 
-  const changePage = (num) => setCurrentItems(getPage(users, num));
-
   const searchUser = (data) => {
     data = data.toLowerCase();
 
-    const filteredUsers = paginate(
+    const filteredUsers = 
       allUsers.filter(
         (e) =>
           e.name.toLowerCase().includes(data) ||
@@ -45,12 +42,8 @@ const Panel = () => {
           false ||
           `${e.name.toLowerCase()} ${e.surname.toLowerCase()}`.includes(data) ||
           `${e.surname.toLowerCase()} ${e.name.toLowerCase()}`.includes(data)
-      ),
-      usersPerPage
-    );
-
-    setUsers(filteredUsers);
-    setCurrentItems(getPage(filteredUsers, 1));
+      );
+    setFilteredUsers(filteredUsers);
     setPage(1);
   };
 
@@ -60,35 +53,32 @@ const Panel = () => {
     setCopyTitle('Skopiuj');
   };
 
-  const getUsers = async () => {
+  const getUsersPerPage = async (page) => {
     setLoading(true);
-
-    //* Clearing users to remove current ones,
-    //* so that the only visible thing is loading text.
-    setUsers([]);
-    setCurrentItems([]);
-
-    const res = await UsersService.getAllUsers();
-    const users = res.data.users;
+    const res = await UsersService.getUsersPerPage({skip: usersPerPage*(page-1) , take: usersPerPage});
     if (res.data.success) {
-      setUsers(users);
-      setAllUsers(users);
-      setCurrentItems(users);
+      setCurrentItems(res.data.users);
     }
-
-
-    const paginatedUsers = paginate(users, usersPerPage);
-
-    setUsers(paginatedUsers);
-    setCurrentItems(getPage(paginatedUsers, page));
-
     setLoading(false);
   };
 
+  const getUsers = async () => {
+    setLoading(true);
+    const res = await UsersService.getAllUsers();
+    if (res.data.success) {
+      setAllUsers(res.data.users);
+      setFilteredUsers(res.data.users);
+    }
+
+    getUsersPerPage(page);
+
+  };
+  
   useEffect(() => {
     getUsers();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div css={PanelStyles.panel}>
       <div css={PanelStyles.container(theme)}>
@@ -110,14 +100,11 @@ const Panel = () => {
           />
         </div>
         <div css={PanelStyles.users}>
-          {loading && (
-            <div css={PanelStyles.loading}>
-              <span>Ładuję listę użytkowników...</span>
-            </div>
-          )}
-          {!!users.length ? (
+          {!!currentItems.length && !loading ? (
               <Items
-                currentItems={currentItems}
+                currentItems={filteredUsers.length === allUsers.length ? currentItems : 
+                  filteredUsers}
+                
                 copyTitle={copyTitle}
                 copied={copied}
                 getUsers={getUsers}
@@ -125,8 +112,11 @@ const Panel = () => {
                 theme={theme}
               />
           ) : (
-            !loading && (
-              <div css={css`margin-left: 4px;`}>
+          loading ? (<div css={PanelStyles.loading}>
+              <span>Ładuję listę użytkowników...</span>
+            </div>)
+            : (
+              <div css={css`margin: 24px 4px;`}>
                 <Typography component='span' className='select-none opacity-80'>
                   Brak użytkowników w bazie
                 </Typography>
@@ -135,22 +125,26 @@ const Panel = () => {
           )}
         </div>
         <div css={PanelStyles.usersCount}>
-          {users && (
+          {currentItems && (
             <span css={PanelStyles.userCountText}>
-              Znaleziono {allUsers.length} użytkowników
+              {document.body.clientWidth <= 480 ?  
+              `${allUsers.length} użytk.`: 
+              `Znaleziono ${allUsers.length} użytkowników`}
             </span>
           )}
-          {!!users.length && <div css={PanelStyles.pagination}>
+          {!!currentItems.length && <div css={PanelStyles.pagination}>
             <Pagination
               css={css`display: flex; align-items: center`}
               shape='rounded'
               size={document.body.clientWidth <= 480 ? 'small' : 'medium'}
               siblingCount={document.body.clientWidth <= 480 ? 0 : 1}
-              count={users.length}
+              count={ filteredUsers.length === allUsers.length ?
+                Math.ceil(allUsers.length / usersPerPage) : 1
+              }
               page={page}
               onChange={(e, p) => {
                 setPage(p);
-                changePage(p);
+                getUsersPerPage(p);            
               }}
             />
           </div>}
@@ -159,7 +153,7 @@ const Panel = () => {
             startIcon={<MdPersonAdd />}
             onClick={() => navigate('/dashboard/add-user')}
           >
-            {document.body.clientWidth <= 480 ? 'Dodaj' : 'Dodaj użytkownika'}
+            {document.body.clientWidth <= 540 ? 'Dodaj' : 'Dodaj użytkownika'}
           </Button>
         </div>
       </div>
