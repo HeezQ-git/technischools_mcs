@@ -1,0 +1,87 @@
+- make login - auth @done
+- timed and scheduled messages / templates / form / landing page
+- import userow, eksport wybranych lub wszystkich userow, mozliwosc wybierac i dodawac do grupy lub nowej grupy
+- put the right svg in
+- size of listItem, transition
+- naprawic ladowanie userow z grup, cash czy cokolwiek @done
+- manage client (dodaj do tabeli users klucz obcy client_id) @done
+- state i reducer, zapytac sie jak i gdzie warto zmienic @done
+- send grid (napisac po bd) @done
+- send to unique emails only @done
+- ogarnac messages tab i senders @done
+
+- clean code i zasady pisania @done
+- check folders for unnessesary files @done
+- zrobic bd i naprawic wszystkie funkcje pod sql, zamiast mongo @done
+- przepisac na emotion (prawie done, tylko naprawic grupy i rowne marginy) @done
+
+- implement singleton (no need in this) @done
+- loading in groups @done
+- implement pagination with prisma @done
+- click everything, check errors messages etc. @done
+- delete group jak w panel @done
+- make response message handler in most of the places @done
+- remake error handling @done
+- brak grup komunikat @done
+- nie usuwa sie user i grupa jesli tylko 1, trzeba reload strone @done
+- react query (nwm)
+- zrob search engine hook lepszym
+- panel reload better animation @done
+- fix structure of the project @done
+- gdzie debounce?
+- zrozumiec panel pagination i zrobic clean code dla userow @done
+- routes naprawic 
+- active dla accounts 
+- edit your own account
+- rwd panel
+- rwd header @done
+- zrob username unique dla findUnique @done
+- ogarnij unique wartosci, zeby prisma sama je sprawdzala !!! chyba nie warto @done
+- przepisz editing w groupslist @done
+- logo - ? , nazwa - holoub 
+- raporty w dashboard
+- import users/groups from a file
+- templates of messages
+- sprawdz, czy uzywasz get 1 user z backendu @done
+- dodaj naglowki do add user, create group i td @done
+- design. (naprawic odstepy, marginy, paddingi, fonty, kolory, itd)
+- rwd naprawic
+- w /panel przy hover skacze na gore tooltip @done
+- clean architecture blog.cleancoder.com/uncle... (nwm)
+
+templates:
+- zmienic component messageHistory i dodać do niego templates pieknie
+
+ceny:
+    - twillio: $0.0431 / sms
+    - messagebird: $0.035 / sms
+    - infoBip: $0.0313 / sms
+    - messente: $0.0313 / sms
+
+    - sendgrid: $19.95 / month - 50000/month emails cap
+    - infoBip: €0.0005 / email (from 200k/month emails more worth it than sendgrid)
+8.12.2022 spotkanie z klientem @done @done @done @done @done @done
+
+tech stack: @done @done @done @done @done @done
+    - react
+    - next.js ?
+    -
+
+my-app/
+  frontend/
+    public/
+    src/
+      components/
+      pages/
+      App.js
+      index.js
+  backend/
+    controllers/
+    models/
+    routes/
+    app.js
+  package.json
+
+tooltip, chip, button, textField, AutoComplete, Input, Radio Group, Pagination
+
+julian.korgol@gmail.com

@@ -1,22 +1,18 @@
 {
-  "name": "node-new-starter",
+  "name": "mcs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "homepage": "https://heezq-git.github.io",
+  "main": "server/app.js",
+  "homepage": "https://mcs.technischools.com",
   "scripts": {
-    "start": "nodemon node-new-starter",
-    "predeploy": "npm run build",
+    "start": "nodemon mcs",
+    "predeploy": "npm build",
     "deploy": "gh-pages -d build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@mui/material": "^5.5.0",
     "@prisma/client": "^4.7.0",
-    "@sendgrid/mail": "^7.7.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -24,15 +20,8 @@
     "express": "^4.17.1",
     "gh-pages": "^3.2.3",
     "jsonwebtoken": "^8.5.1",
-    "messagebird": "^3.8.1",
-    "mongoose": "^5.12.15",
-    "mui": "^0.0.1",
-    "mysql": "^2.18.1",
-    "mysql2": "^2.3.3",
-    "nodemailer": "^6.7.3",
     "save-dev": "^0.0.1-security",
     "smsapi": "^2.0.4",
-    "twilio": "^3.77.0",
     "validate-polish": "^2.0.40"
   },
   "devDependencies": {
